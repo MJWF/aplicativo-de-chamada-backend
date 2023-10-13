@@ -98,7 +98,7 @@ def login():
             mycursor.execute(sql_command, value)
             tipo_user = mycursor.fetchone()
 
-            return jsonify({'acesso': 'OK', 'Tipo_aluno': tipo_user, 'email': email})
+            return jsonify({'acesso': 'OK', 'Tipo_aluno': tipo_user[0], 'email': email})
         else:
             print("Senha incorreta")
     else:
