@@ -43,7 +43,7 @@ def cadastro():
     # Inicializando parâmetros do banco de dados e passando para tabela usuario (padrão)
     # Comandos para inserção no banco de dados
     mycursor = db.cursor()
-    sql_command_for_database = "INSERT INTO usuario (nome, email, senha, tipo_usuario) VALUES (%s, %s, %s, %s)"
+    sql_command_for_database = "INSERT INTO usuario (nome, email, senha, tipo_usuario) VALUES (%s, %s, %s, %s);"
     values_for_database = (nome_usuario, email_usuario, password_usuario, tipo_usuario)
     try:
         mycursor.execute(sql_command_for_database, values_for_database)
@@ -58,9 +58,9 @@ def cadastro():
     values_for_database = (nome_usuario, email_usuario, password_usuario)
     
     if(tipo_usuario == 'professor'):
-        sql_command_for_database = "INSERT INTO professor (nome, email, senha) VALUES (%s, %s, %s)"
+        sql_command_for_database = "INSERT INTO professor (nome, email, senha) VALUES (%s, %s, %s);"
     elif(tipo_usuario == 'aluno'):
-        sql_command_for_database = "INSERT INTO aluno (Nome, Email, Senha) VALUES (%s, %s, %s)"
+        sql_command_for_database = "INSERT INTO aluno (Nome, Email, Senha) VALUES (%s, %s, %s);"
 
     try:
         mycursor.execute(sql_command_for_database, values_for_database)
@@ -82,7 +82,7 @@ def login():
     mycursor = db.cursor()
 
     # Procura no banco de dados um usuário com o email que foi passado
-    sql_command = "SELECT Email, Senha FROM usuario Where Email = %s"
+    sql_command = "SELECT Email, Senha FROM usuario Where Email = %s;"
     value = (email,)
     mycursor.execute(sql_command, value)
     email_res = mycursor.fetchone()
@@ -93,7 +93,7 @@ def login():
         if senha_encontrada == password:
 
             print("Logado com sucesso")
-            sql_command = "SELECT Tipo_usuario from usuario WHERE Email = %s"
+            sql_command = "SELECT Tipo_usuario from usuario WHERE Email = %s;"
             value = (email,)
             mycursor.execute(sql_command, value)
             tipo_user = mycursor.fetchone()
@@ -117,12 +117,12 @@ def Registrar_materia():
     codigo = random.randint(230000, 239999)
     #Insere na tabela Materia
     mycursor = db.cursor()
-    sql_command_for_database = "INSERT INTO Materia (Codigo, Nome, Ementa) VALUES (%s, %s, %s)"
+    sql_command_for_database = "INSERT INTO Materia (Codigo, Nome, Ementa) VALUES (%s, %s, %s);"
     values_for_database = (codigo, Nome_materia, Ementa)
     mycursor.execute(sql_command_for_database, values_for_database)
 
     #Insere na tabela Materia x Professor
-    sql_command_for_database = "INSERT INTO Materia_Professor (Nome_Professor, Nome_Materia) VALUES (%s, %s)"
+    sql_command_for_database = "INSERT INTO Materia_Professor (Nome_Professor, Nome_Materia) VALUES (%s, %s);"
     values_for_database = (Nome_professor, Nome_materia)
     mycursor.execute(sql_command_for_database, values_for_database)
 
@@ -130,5 +130,40 @@ def Registrar_materia():
 
 
     return jsonify({'Status': 'Materia criada com sucesso!!!'})
+
+
+
+
+@app.route('/return_aluno', methods=['GET'])
+def return_professor():
+
+    email = request.form['email']
+    #email = "janedoe@gmail.com" teste de execução
+
+    # Inicialização do cursor
+    mycursor = db.cursor()
+    # Comando e valores para consultar o banco de dados
+    sql_command_for_database = "SELECT * FROM aluno WHERE Email = %s;"
+    values_for_database = (email,)
+
+    # Tenta executar o camando no banco de dados para fazer a consulta
+    try:
+        mycursor.execute(sql_command_for_database, values_for_database)
+    except:
+        return jsonify({'return_aluno': 'error'})
+
+    aluno_data = mycursor.fetchone()
+
+    # parâmetros separados pra retornar para o backend
+    aluno_RA = aluno_data[0]
+    aluno_nome = aluno_data[1]
+    aluno_email = aluno_data[2]
+
+    return jsonify({'aluno_RA': aluno_RA, 'aluno_nome': aluno_nome, 'aluno_email': aluno_email})
+
+
+    
+
+
 if __name__ == '__main__':
     app.run()
