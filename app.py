@@ -134,7 +134,7 @@ def Registrar_materia():
 
 
 
-@app.route('/return_aluno', methods=['GET'])
+@app.route('/return_aluno', methods=['POST'])
 def return_professor():
 
     email = request.form['email']
