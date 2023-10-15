@@ -134,8 +134,8 @@ def Registrar_materia():
 
 
 
-@app.route('/return_aluno', methods=['GET'])
-def return_professor():
+@app.route('/return_aluno', methods=['POST'])
+def return_aluno():
 
     email = request.form['email']
     #email = "janedoe@gmail.com" teste de execução
@@ -162,8 +162,59 @@ def return_professor():
     return jsonify({'aluno_RA': aluno_RA, 'aluno_nome': aluno_nome, 'aluno_email': aluno_email})
 
 
-    
+@app.route('/Materia_Aluno', methods=['POST'])
+def Materia_Aluno():
 
+    Nome_Aluno = request.form['Nome']
+    Nome_Materia = request.form['Materia']
+
+    #Nome_Aluno = 'Rafael Sato'
+    #Nome_Materia = 'calculo'
+
+    # Inicialização do cursor
+    mycursor = db.cursor()
+    # Comando e valores para consultar o banco de dados
+    sql_command_for_database = "INSERT INTO Materia_Aluno (Nome_Aluno, Nome_Materia) VALUES (%s, %s);"
+    values_for_database = (Nome_Aluno, Nome_Materia)
+
+    # Tenta executar o camando no banco de dados para fazer a consulta
+    try:
+        mycursor.execute(sql_command_for_database, values_for_database)
+    except:
+        return jsonify({'Materia_Aluno': 'error'})
+
+    db.commit()
+
+    return jsonify({'status':'O aluno foi inscrito com sucesso na materia'})
+
+
+@app.route('/return_professor', methods=['GET'])
+def return_professor():
+
+    #Email = request.form['Email']
+
+    Email = "professor@gmail.com"
+
+    # Inicialização do cursor
+    mycursor = db.cursor()
+    # Comando e valores para consultar o banco de dados
+    sql_command_for_database = "SELECT * FROM professor WHERE Email = %s;"
+    values_for_database = (Email,)
+
+    # Tenta executar o camando no banco de dados para fazer a consulta
+    try:
+        mycursor.execute(sql_command_for_database, values_for_database)
+    except:
+        return jsonify({'return_professor': 'error'})
+
+    professor_data = mycursor.fetchone()
+
+    # parâmetros separados pra retornar para o backend
+    professor_RP = professor_data[0]
+    professor_nome = professor_data[1]
+    professor_email = professor_data[2]
+
+    return jsonify({'professor_RP': professor_RP, 'professor_nome': professor_nome, 'professor_email': professor_email})
 
 if __name__ == '__main__':
     app.run()
