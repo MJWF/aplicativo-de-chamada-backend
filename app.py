@@ -188,12 +188,12 @@ def Materia_Aluno():
     return jsonify({'status':'O aluno foi inscrito com sucesso na materia'})
 
 
-@app.route('/return_professor', methods=['GET'])
+@app.route('/return_professor', methods=['POST'])
 def return_professor():
 
-    #Email = request.form['Email']
+    Email = request.form['Email']
 
-    Email = "professor@gmail.com"
+    #Email = "professor@gmail.com"
 
     # Inicialização do cursor
     mycursor = db.cursor()
