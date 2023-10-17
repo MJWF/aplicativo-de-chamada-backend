@@ -128,7 +128,6 @@ def Registrar_materia():
 
     db.commit()
 
-
     return jsonify({'Status': 'Materia criada com sucesso!!!'})
 
 
@@ -216,5 +215,28 @@ def return_professor():
 
     return jsonify({'professor_RP': professor_RP, 'professor_nome': professor_nome, 'professor_email': professor_email})
 
+
+@app.route('/return_materias', methods=['POST'])
+def return_materias():
+
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT * FROM Materia"
+
+    mycursor.execute(sql_command_for_database)
+
+    materias_data = mycursor.fetchall()
+    size = len(materias_data)
+
+    data = []
+
+    for i in range(size):
+        materias = {
+        'codigo_materias': str(materias_data[i][0]),
+        'nome_materias': materias_data[i][1],
+        'ementa_materias': materias_data[i][2]
+        }
+        data.append(materias)
+
+    return jsonify(data)
 if __name__ == '__main__':
     app.run()
