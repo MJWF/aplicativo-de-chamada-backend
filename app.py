@@ -336,5 +336,31 @@ def retorna_materias_professor():
     print(data)
     return jsonify(data)
 
+
+@app.route('/return_alunos_materias', methods=['POST'])
+
+def return_alunos_materias():
+
+    materia = request.form['materia_escolhida']
+
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT Nome FROM aluno WHERE Email IN (SELECT Nome_Aluno FROM Materia_Aluno WHERE Nome_Materia = (SELECT Codigo FROM Materia WHERE Nome = %s))"
+
+    values = (materia,)
+    mycursor.execute(sql_command_for_database, values)
+
+    alunos_materias_data = mycursor.fetchall()
+
+    data = []
+
+    for aluno_materia in alunos_materias_data:
+        aluno = {
+            'nome_aluno': aluno_materia[0],
+        }
+
+        data.append(aluno)
+
+    return jsonify(data)
+
 if __name__ == '__main__':
     app.run()
