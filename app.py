@@ -166,7 +166,7 @@ def ReturnInfoGerais():
         user_data = mycursor.fetchone()
         print(user_data)
         if user_data is not None:
-            user_RegisterNumber = user_data[0]
+            user_RegisterNumber = str(user_data[0])
             user_nome = user_data[1]
             user_email = user_data[2]
         
