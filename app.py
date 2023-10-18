@@ -238,5 +238,55 @@ def return_materias():
         data.append(materias)
 
     return jsonify(data)
+
+
+@app.route('/verificar_inscricao', methods=['POST'])
+def verificar_inscricao():
+
+    Email = request.form['Email']
+    ID_materia = request.form['ID_materia']
+
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT * FROM Materia_Aluno WHERE Nome_Aluno = %s and Nome_Materia = %s"
+    values_for_database = (Email, ID_materia)
+    try:
+        mycursor.execute(sql_command_for_database, values_for_database)
+    except:
+        return jsonify({'verificar_inscricao': 'Error'})
+
+    response = mycursor.fetchone()
+
+    if response is not None:
+        return jsonify('True')
+    else:
+        return jsonify('False')
+    
+
+@app.route('/retorna_materias_professor', methods=['POST'])
+def retorna_materias_professor():
+
+    email = request.form['Email']
+
+    mycursor = db.cursor()
+
+    command = "SELECT Nome_Materia FROM Materia_Professor WHERE Nome_Professor = %s"
+    values = (email,)
+
+    mycursor.execute(command, values)
+
+    response = mycursor.fetchall()
+
+    size = len(response)
+    data = []
+
+    for i in range(size):
+        materias_retornadas = {
+        'nome_materia': str(response[i][0]),
+        }
+        data.append(materias_retornadas)
+
+    print(data)
+    return jsonify(data)
+
 if __name__ == '__main__':
     app.run()
