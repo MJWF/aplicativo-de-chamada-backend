@@ -335,52 +335,7 @@ def retorna_materias_professor():
 
     print(data)
     return jsonify(data)
-
-
-@app.route('/ReturnInfoGerais', methods=['POST'])
-def ReturnInfoGerais():
-    email = request.form['email']
-
-    # Inicialização do cursor
-    mycursor = db.cursor()
-    # Comando e valores para consultar o banco de dados
-    sql_command_for_database = "SELECT Tipo_usuario FROM usuario WHERE Email = %s;"
-    values_for_database = (email,)
-
-    try:
-        mycursor.execute(sql_command_for_database, values_for_database)
-    except:
-        return jsonify({'ReturnInfoGerais': 'error'})
-
-    user_type = mycursor.fetchone()
-    print(user_type)
-    if user_type is not None:
-        if(user_type[0] == 'aluno'):
-            sql_command_for_database = "SELECT * FROM aluno WHERE Email = %s;"
-        elif(user_type[0] == 'professor'):
-            sql_command_for_database = "SELECT * FROM professor WHERE Email = %s;"
-        elif(user_type[0] == 'admin'):
-            sql_command_for_database = "SELECT * FROM Admin WHERE Email = %s;"
-
-        try:
-            mycursor.execute(sql_command_for_database, values_for_database)
-        except:
-            return jsonify({'ReturnInfoGerais': 'error'})
-
-        user_data = mycursor.fetchone()
-        print(user_data)
-        if user_data is not None:
-            user_RegisterNumber = user_data[0]
-            user_nome = user_data[1]
-            user_email = user_data[2]
-
-            return jsonify({'user_RegisterNumber': user_RegisterNumber, 'user_nome': user_nome, 'user_email': user_email})
-        else:
-            return jsonify({'user_RegisterNumber': "NULL", 'user_nome': "NULL", 'user_email': "NULL"})
-    else:
-        return jsonify({'ReturnInfoGerais': 'Null'})
     
-
 @app.route('/return_alunos_materias', methods=['POST'])
 
 def return_alunos_materias():
