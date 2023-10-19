@@ -337,7 +337,6 @@ def retorna_materias_professor():
     return jsonify(data)
     
 @app.route('/return_alunos_materias', methods=['POST'])
-
 def return_alunos_materias():
 
     materia = request.form['materia_escolhida']
