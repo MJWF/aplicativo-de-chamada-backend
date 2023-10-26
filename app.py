@@ -16,7 +16,8 @@ db = mysql.connector.connect(
     host=app.config['MYSQL_HOST'],
     user=app.config['MYSQL_USER'],
     password=app.config['MYSQL_PASSWORD'],
-    database=app.config['MYSQL_DB']
+    database=app.config['MYSQL_DB'],
+    charset="utf8"
 )
 
 app = Flask(__name__)
@@ -359,6 +360,49 @@ def return_alunos_materias():
         data.append(aluno)
 
     return jsonify(data)
+
+@app.route('/return_presenca_pela_materia', methods=['POST'])
+def return_presenca_pela_materia():
+
+    #Recebe os parâmetros do frontend
+    # materia precisa ser o código dela !!!!!
+    materia = request.form['materia_escolhida']
+    #materia = "238261"
+
+    # Seleciona o total de aulas daquela matéria
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT Aulas_Dadas FROM Materia where Codigo = %s" 
+    values = (materia,)
+    mycursor.execute(sql_command_for_database, values)
+    sql_response = mycursor.fetchone()
+
+    aulas_dadas_materia = sql_response[0]
+
+    # Nesse select eu juntei as tabelas aluno e materia_aluno para conseguir pegar as informações certas para retorno
+    # Deixei ordenado de ordem alfabética
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT Nome, RA, Frequencia FROM aluno LEFT JOIN Materia_Aluno ON aluno.Email = Materia_Aluno.Nome_Aluno Where Nome_Materia = %s order by Nome;" 
+    values = (int(materia),)
+    mycursor.execute(sql_command_for_database, values)
+    sql_response = mycursor.fetchall()
+
+    # Fiz o cálculo da frequencia em poncentagem e depois passei para string
+    for i in range(len(sql_response)):
+        # Certifique-se de que o terceiro elemento não seja zero para evitar divisão por zero
+        if aulas_dadas_materia != 0:
+            # Atualize o terceiro elemento
+            sql_response[i] = list(sql_response[i]) 
+            sql_response[i][2] =  str(round((sql_response[i][2] / aulas_dadas_materia) * 100)) + "%" # Divisão
+            sql_response[i] = tuple(sql_response[i])
+        else:  
+            sql_response[i] = list(sql_response[i])    
+            sql_response[i][2] = "100%"  # Divisão
+            sql_response[i] = tuple(sql_response[i])
+
+    #print(sql_response)
+    
+    #jsonify contém Nome, Ra, Frequencia(%) nessa ordem
+    return jsonify(sql_response)
 
 if __name__ == '__main__':
     app.run()
