@@ -368,21 +368,23 @@ def return_presenca_pela_materia():
     # materia precisa ser o código dela !!!!!
     materia = request.form['materia_escolhida']
     #materia = "238261"
+ 
 
     # Seleciona o total de aulas daquela matéria
     mycursor = db.cursor()
-    sql_command_for_database = "SELECT Aulas_Dadas FROM Materia where Codigo = %s" 
+    sql_command_for_database = "SELECT Aulas_Dadas, Codigo FROM Materia where Nome = %s" 
     values = (materia,)
     mycursor.execute(sql_command_for_database, values)
     sql_response = mycursor.fetchone()
 
     aulas_dadas_materia = sql_response[0]
+    Codigo_Materia = sql_response[1]
 
     # Nesse select eu juntei as tabelas aluno e materia_aluno para conseguir pegar as informações certas para retorno
     # Deixei ordenado de ordem alfabética
     mycursor = db.cursor()
     sql_command_for_database = "SELECT Nome, RA, Frequencia FROM aluno LEFT JOIN Materia_Aluno ON aluno.Email = Materia_Aluno.Nome_Aluno Where Nome_Materia = %s order by Nome;" 
-    values = (int(materia),)
+    values = (int(Codigo_Materia),)
     mycursor.execute(sql_command_for_database, values)
     sql_response = mycursor.fetchall()
 
