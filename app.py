@@ -218,7 +218,7 @@ def Materia_Aluno():
     # Inicialização do cursor
     mycursor = db.cursor()
     # Comando e valores para consultar o banco de dados
-    sql_command_for_database = "INSERT INTO Materia_Aluno (Nome_Aluno, Nome_Materia) VALUES (%s, %s);"
+    sql_command_for_database = "INSERT INTO Materia_Aluno (Nome_Aluno, Nome_Materia, Frequencia) VALUES (%s, %s, 0);"
     values_for_database = (Nome_Aluno, Nome_Materia)
 
     # Tenta executar o camando no banco de dados para fazer a consulta
