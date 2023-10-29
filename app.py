@@ -421,7 +421,84 @@ def fazer_chamada():
     
     db.commit()
 
-    return jsonify({'Codigo para chamada': codigo_chamada_str})
+    return jsonify(codigo_chamada_str)
 
+@app.route('/return_materias_inscritas_do_aluno', methods=['POST'])
+def return_alunos_materias():
+
+    email = request.form['email']
+
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT Nome FROM Materia WHERE Codigo IN (SELECT Nome_Materia FROM Materia_Aluno WHERE Nome_Aluno = %s;)"
+
+    values = (email,)
+    mycursor.execute(sql_command_for_database, values)
+
+    materias_do_aluno= mycursor.fetchall()
+
+    data = []
+
+    for materia_aluno in materias_do_aluno:
+        materias = {
+            'nome_materia': materia_aluno[0],
+        }
+
+        data.append(materias)
+
+    print(materias)
+
+    return jsonify(data)
+
+@app.route('/verificar_codigo_inserido_pelo_aluno', methods=['POST'])
+def return_alunos_materias():
+
+    email = request.form['email']
+    code_from_user = request.form['code']
+    materia = request.form['materia']
+
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT Codigo_da_chamada, Codigo FROM Materia WHERE Nome = %s"
+    values = (materia,)
+    mycursor.execute(sql_command_for_database, values)
+
+    sql_response = mycursor.fetchone()
+    code_from_discipline = sql_response[0]
+    discipline_code = sql_response[1]
+
+    if code_from_user == code_from_discipline:
+        sql_command_for_database = "UPDATE Materia_Aluno SET Frequencia = Frequencia + 1 WHERE Nome_Aluno = %s AND Nome_Materia = %s"
+        values = (email, discipline_code)
+        mycursor.execute(sql_command_for_database, values)
+        return jsonify({'presenca': "OK"})
+
+    else:
+        return jsonify({'presenca': "Erro"})
+    
+
+@app.route('/retornar_presenca_para_aluno_por_materia', methods=['POST'])
+def return_alunos_materias():
+
+    email = request.form['email']
+    materia = request.form['materia']
+
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT Frequencia FROM Materia_Aluno WHERE Nome_Aluno = %s"
+    values = (email,)
+    mycursor.execute(sql_command_for_database, values)
+
+    sql_response = mycursor.fetchone()
+    user_frequency = sql_response[0]
+
+    sql_command_for_database = "SELECT Aulas_Dadas FROM Materia WHERE Nome = %s"
+    values = (materia,)
+    mycursor.execute(sql_command_for_database, values)
+
+    sql_frequency_response = mycursor.fetchone()
+    given_classes = sql_frequency_response[0]
+
+    frequecy = str(round((int(user_frequency) / int(given_classes))) * 100) + "%"
+
+    return jsonify(frequecy)
+    
 if __name__ == '__main__':
     app.run()
