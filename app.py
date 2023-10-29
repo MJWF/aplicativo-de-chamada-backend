@@ -403,6 +403,7 @@ def return_presenca_pela_materia():
 @app.route('/fazer_chamada', methods=['POST'])
 def fazer_chamada():
     materia = request.form['materia_escolhida']
+    print(materia)
     #materia = 'Geografia'
     codigo_chamada = random.randint(230000, 239999)
     codigo_chamada_str = str(codigo_chamada)
