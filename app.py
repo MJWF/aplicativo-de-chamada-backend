@@ -404,5 +404,24 @@ def return_presenca_pela_materia():
     #jsonify contém Nome, Ra, Frequencia(%) nessa ordem
     return jsonify(sql_response)
 
+@app.route('/fazer_chamada', methods=['POST'])
+def fazer_chamada():
+    materia = request.form['materia_escolhida']
+    #materia = 'Geografia'
+    codigo_chamada = random.randint(230000, 239999)
+    codigo_chamada_str = str(codigo_chamada)
+    mycursor = db.cursor()
+
+    sql_command_for_database = "UPDATE Materia SET Aulas_Dadas = Aulas_Dadas + 1, Codigo_da_Chamada = %s WHERE Nome = %s" 
+    values = (codigo_chamada_str, materia)
+    try:
+        mycursor.execute(sql_command_for_database, values)
+    except:
+        return jsonify({'realizar_chamada': 'Error'})
+    
+    db.commit()
+
+    return jsonify({'Codigo para chamada': codigo_chamada_str})
+
 if __name__ == '__main__':
     app.run()
