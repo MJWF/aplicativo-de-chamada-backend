@@ -425,7 +425,7 @@ def return_alunos_materias_inscritas_do_aluno():
     email = request.form['email']
 
     mycursor = db.cursor()
-    sql_command_for_database = "SELECT Nome FROM Materia WHERE Codigo IN (SELECT Nome_Materia FROM Materia_Aluno WHERE Nome_Aluno = %s;)"
+    sql_command_for_database = "SELECT Nome FROM Materia WHERE Codigo IN (SELECT Nome_Materia FROM Materia_Aluno WHERE Nome_Aluno = %s);"
 
     values = (email,)
     mycursor.execute(sql_command_for_database, values)
