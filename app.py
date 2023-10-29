@@ -416,11 +416,10 @@ def fazer_chamada():
     except:
         return jsonify({'realizar_chamada': 'Error'})
     
-
-    return jsonify({'codigo_chamada': str(codigo_chamada_str)})
+    return jsonify({'codigo_chamada': codigo_chamada_str})
 
 @app.route('/return_materias_inscritas_do_aluno', methods=['POST'])
-def return_alunos_materias():
+def return_alunos_materias_inscritas_do_aluno():
 
     email = request.form['email']
 
@@ -446,7 +445,7 @@ def return_alunos_materias():
     return jsonify(data)
 
 @app.route('/verificar_codigo_inserido_pelo_aluno', methods=['POST'])
-def return_alunos_materias():
+def verificar_codigo_inserido_pelo_aluno():
 
     email = request.form['email']
     code_from_user = request.form['code']
@@ -473,7 +472,7 @@ def return_alunos_materias():
     
 
 @app.route('/retornar_presenca_para_aluno_por_materia', methods=['POST'])
-def return_alunos_materias():
+def retornar_presenca_para_aluno_por_materia():
 
     email = request.form['email']
     materia = request.form['materia']
