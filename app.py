@@ -118,7 +118,7 @@ def Registrar_materia():
     codigo = random.randint(230000, 239999)
     #Insere na tabela Materia
     mycursor = db.cursor()
-    sql_command_for_database = "INSERT INTO Materia (Codigo, Nome, Ementa) VALUES (%s, %s, %s);"
+    sql_command_for_database = "INSERT INTO Materia (Codigo, Nome, Ementa, Aulas_Dadas) VALUES (%s, %s, %s, 0);"
     values_for_database = (codigo, Nome_materia, Ementa)
     mycursor.execute(sql_command_for_database, values_for_database)
 
@@ -493,7 +493,7 @@ def retornar_presenca_para_aluno_por_materia():
 
     if given_classes == 0:
         frequecy = "100%"
-        
+
     else:
         frequecy = str(round(((int(user_frequency) / int(given_classes))) * 100)) + "%"
     return jsonify(frequecy)
