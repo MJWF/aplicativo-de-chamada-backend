@@ -479,8 +479,8 @@ def retornar_presenca_para_aluno_por_materia():
     materia = request.form['materia']
 
     mycursor = db.cursor()
-    sql_command_for_database = "SELECT Frequencia FROM Materia_Aluno WHERE Nome_Aluno = %s"
-    values = (email,)
+    sql_command_for_database = "SELECT Frequencia FROM Materia_Aluno WHERE Nome_Aluno = %s AND Nome_Materia = (SELECT Codigo FROM Materia WHERE Nome = %s) "
+    values = (email,materia)
     mycursor.execute(sql_command_for_database, values)
 
     sql_response = mycursor.fetchone()
@@ -493,8 +493,7 @@ def retornar_presenca_para_aluno_por_materia():
     sql_frequency_response = mycursor.fetchone()
     given_classes = sql_frequency_response[0]
 
-    frequecy = str(round((int(user_frequency) / int(given_classes))) * 100) + "%"
-
+    frequecy = str(round(((int(user_frequency) / int(given_classes))) * 100)) + "%"
     return jsonify(frequecy)
     
 if __name__ == '__main__':
