@@ -177,10 +177,6 @@ def ReturnInfoGerais():
     else:
         return jsonify({'ReturnInfoGerais': 'Null'})
 
-    
-
-
-
 
 @app.route('/return_aluno', methods=['POST'])
 def return_aluno():
@@ -412,16 +408,16 @@ def fazer_chamada():
     codigo_chamada_str = str(codigo_chamada)
     mycursor = db.cursor()
 
-    sql_command_for_database = "UPDATE Materia SET Aulas_Dadas = Aulas_Dadas + 1, Codigo_da_Chamada = %s WHERE Nome = %s" 
+    sql_command_for_database = "UPDATE Materia SET Aulas_Dadas = Aulas_Dadas + 1, Codigo_da_Chamada = %s WHERE Nome = %s;" 
     values = (codigo_chamada_str, materia)
     try:
         mycursor.execute(sql_command_for_database, values)
+        db.commit()
     except:
         return jsonify({'realizar_chamada': 'Error'})
     
-    db.commit()
 
-    return jsonify(codigo_chamada_str)
+    return jsonify({'codigo_chamada': str(codigo_chamada_str)})
 
 @app.route('/return_materias_inscritas_do_aluno', methods=['POST'])
 def return_alunos_materias():
@@ -469,6 +465,7 @@ def return_alunos_materias():
         sql_command_for_database = "UPDATE Materia_Aluno SET Frequencia = Frequencia + 1 WHERE Nome_Aluno = %s AND Nome_Materia = %s"
         values = (email, discipline_code)
         mycursor.execute(sql_command_for_database, values)
+        db.commit()
         return jsonify({'presenca': "OK"})
 
     else:
