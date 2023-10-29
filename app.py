@@ -491,7 +491,11 @@ def retornar_presenca_para_aluno_por_materia():
     sql_frequency_response = mycursor.fetchone()
     given_classes = sql_frequency_response[0]
 
-    frequecy = str(round(((int(user_frequency) / int(given_classes))) * 100)) + "%"
+    if given_classes == 0:
+        frequecy = "100%"
+        
+    else:
+        frequecy = str(round(((int(user_frequency) / int(given_classes))) * 100)) + "%"
     return jsonify(frequecy)
     
 if __name__ == '__main__':
