@@ -441,8 +441,6 @@ def return_alunos_materias_inscritas_do_aluno():
 
         data.append(materias)
 
-    print(materias)
-
     return jsonify(data)
 
 @app.route('/verificar_codigo_inserido_pelo_aluno', methods=['POST'])
