@@ -61,7 +61,7 @@ def cadastro():
     if(tipo_usuario == 'professor'):
         sql_command_for_database = "INSERT INTO professor (nome, email, senha) VALUES (%s, %s, %s);"
     elif(tipo_usuario == 'aluno'):
-        sql_command_for_database = "INSERT INTO aluno (Nome, Email, Senha) VALUES (%s, %s, %s);"
+        sql_command_for_database = "INSERT INTO aluno (Nome, Email, Senha, Representante) VALUES (%s, %s, %s, False);"
 
     try:
         mycursor.execute(sql_command_for_database, values_for_database)
@@ -497,6 +497,62 @@ def retornar_presenca_para_aluno_por_materia():
     else:
         frequecy = str(round(((int(user_frequency) / int(given_classes))) * 100)) + "%"
     return jsonify(frequecy)
+
+
+
+@app.route('/presenca_coletiva', methods=['POST'])
+def presenca_coletiva():
+
+    nomeMateria = request.form['materia']
     
+    
+    mycursor = db.cursor()
+    sqlCommand = "UPDATE Materia_Aluno SET Frequencia = Frequencia + 1 WHERE Nome_Materia IN (SELECT Codigo FROM Materia WHERE Nome = %s);"
+    valuesDatabase = (nomeMateria,)
+
+    try:
+        mycursor.execute(sqlCommand, valuesDatabase)
+        db.commit()
+    except:
+        return jsonify({'presenca_coletiva': "error"})
+
+    return jsonify({'presenca_coletiva': "OK"})
+
+@app.route('/representante', methods=['POST'])
+def representante():
+
+    nomeAluno = request.form['Nome']
+    
+    mycursor = db.cursor()
+    sqlCommand = "SELECT * FROM aluno WHERE Nome = %s;"
+    valuesDatabase = (nomeAluno,)
+
+    mycursor.execute(sqlCommand, valuesDatabase)
+
+    temEsseAluno = mycursor.fetchone()
+
+    if temEsseAluno is not None:
+        mycursor = db.cursor()
+        sqlCommand = "Update aluno SET Representante = 'True' WHERE Nome = %s;"
+        valuesDatabase = (nomeAluno,)
+        try:
+            mycursor.execute(sqlCommand, valuesDatabase)
+            db.commit()
+            return jsonify({'presenca_coletiva': "True"})
+        
+        except:
+            return jsonify({'presenca_coletiva': "error"})
+    
+    else:
+       return jsonify({'presenca_coletiva': "False"}) 
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run()
