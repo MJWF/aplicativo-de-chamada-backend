@@ -400,14 +400,28 @@ def return_presenca_pela_materia():
     #jsonify contém Nome, Ra, Frequencia(%) nessa ordem
     return jsonify(sql_response)
 
-@app.route('/fazer_chamada', methods=['POST'])
+@app.route('/fazer_chamada', methods=['GET'])
 def fazer_chamada():
-    materia = request.form['materia_escolhida']
+    # materia = request.form['materia_escolhida']
+    # materia_codigo = request.form['materia_escolhida_codigo']
+    # descricao = request.form['descricao_aula']
+    # titulo = request.form['titulo_aula']
+
+    materia = 'Geografia'
+    descricao = 'Olhar o mapa'
+    titulo = 'Mapa'
     print(materia)
     #materia = 'Geografia'
     codigo_chamada = random.randint(230000, 239999)
     codigo_chamada_str = str(codigo_chamada)
     mycursor = db.cursor()
+
+    sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
+    values = (materia,)
+    mycursor.execute(sql_command_for_database, values)
+    res_codigo = mycursor.fetchone()
+    print(res_codigo[0])
+    codigo_res = str(res_codigo[0])
 
     sql_command_for_database = "UPDATE Materia SET Aulas_Dadas = Aulas_Dadas + 1, Codigo_da_Chamada = %s WHERE Nome = %s;" 
     values = (codigo_chamada_str, materia)
@@ -416,8 +430,12 @@ def fazer_chamada():
         db.commit()
     except:
         return jsonify({'realizar_chamada': 'Error'})
-    
+    sql_command_for_database = "INSERT INTO Aulas_dadas (codigo_materia, codigo_presenca, descricao, titulo) VALUES (%s, %s, %s, %s);"
+    values = (codigo_res, codigo_chamada, descricao, titulo)
+    mycursor.execute(sql_command_for_database, values)
+    db.commit()
     return jsonify({'codigo_chamada': codigo_chamada_str})
+    
 
 @app.route('/return_materias_inscritas_do_aluno', methods=['POST'])
 def return_alunos_materias_inscritas_do_aluno():
@@ -547,11 +565,27 @@ def representante():
        return jsonify({'presenca_coletiva': "False"}) 
 
 
+@app.route('/return_aulas_da_materia', methods=['GET'])
+def aulas_materia():
+    # materia = request.form['materia']
+    materia = 'Geografia'
+    mycursor = db.cursor()
+
+    sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
+    values = (materia,)
+    mycursor.execute(sql_command_for_database, values)
+    res_codigo = mycursor.fetchone()
+    codigo_res = str(res_codigo[0])
 
 
 
+    sql_command_for_database = "SELECT * FROM Aulas_dadas WHERE codigo_materia = %s"
+    values = (codigo_res,)
+    mycursor.execute(sql_command_for_database, values)
+    aulas_dadas = mycursor.fetchall()
+    print(aulas_dadas)
 
-
+    return jsonify({'Aulas_dadas': aulas_dadas})
 
 
 if __name__ == '__main__':
