@@ -464,10 +464,19 @@ def verificar_codigo_inserido_pelo_aluno():
         values = (email, discipline_code)
         mycursor.execute(sql_command_for_database, values)
         db.commit()
+
+
+        #Alteração feitas para organizar as aulas
+        mycursor = db.cursor()
+        sql_command_for_database = "INSERT INTO AulasComPresenca (CodigoUsuario, CodigoPresencaAula, CodigoMateria) VALUES (%s, %s, %s);"
+        values = (email, code_from_discipline, discipline_code)
+        mycursor.execute(sql_command_for_database, values)
+        db.commit()
         return jsonify({'presenca': "OK"})
 
     else:
         return jsonify({'presenca': "Erro"})
+    
     
 
 @app.route('/retornar_presenca_para_aluno_por_materia', methods=['POST'])
@@ -547,6 +556,12 @@ def representante():
        return jsonify({'presenca_coletiva': "False"}) 
 
 
+@app.route('/returnAulasFaltantes', methods=['POST'])
+def returnAulasFaltantes():
+
+
+
+    nomeAluno = request.form['Nome']
 
 
 
