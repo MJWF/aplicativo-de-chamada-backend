@@ -406,8 +406,6 @@ def fazer_chamada():
     titulo = request.form['titulo']
     descricao = request.form['descricao']
     
-    print(materia)
-    #materia = 'Geografia'
     codigo_chamada = random.randint(230000, 239999)
     codigo_chamada_str = str(codigo_chamada)
     mycursor = db.cursor()
@@ -421,10 +419,12 @@ def fazer_chamada():
     values = (materia,)
     mycursor.execute(sql_command_for_database, values)
 
-    codigo_da_materia = str(mycursor.fetchone()) #nao sei se funciona, qualquer coisa deixa que nem o de cima
+    codigo_da_materia = mycursor.fetchone() #nao sei se funciona, qualquer coisa deixa que nem o de cima
+    codigo_da_materia = str(codigo_da_materia[0])
 
     sql_command_for_database = "INSERT INTO Aulas_dadas VALUES (%s, %s, %s, %s, 0);"
     values = (codigo_da_materia, codigo_chamada_str, descricao, titulo)
+    mycursor.execute(sql_command_for_database, values)
 
     try:  
         db.commit()
