@@ -527,11 +527,28 @@ def retornar_presenca_para_aluno_por_materia():
 def presenca_coletiva():
 
     nomeMateria = request.form['materia']
-    
+    titulo = request.form['titulo']
+    descricao = request.form['descricao']
+
+    codigo_chamada = random.randint(230000, 239999)
+    codigo_chamada_str = str(codigo_chamada)
     
     mycursor = db.cursor()
     sqlCommand = "UPDATE Materia_Aluno SET Frequencia = Frequencia + 1 WHERE Nome_Materia IN (SELECT Codigo FROM Materia WHERE Nome = %s);"
     valuesDatabase = (nomeMateria,)
+    mycursor.execute(sqlCommand, valuesDatabase)
+    db.commit()
+
+    sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
+    values = (nomeMateria,)
+    mycursor.execute(sql_command_for_database, values)
+
+    codigo_da_materia = mycursor.fetchone()
+    codigo_da_materia = str(codigo_da_materia[0])
+
+    sql_command_for_database = "INSERT INTO Aulas_dadas VALUES (%s, %s, %s, %s, 1);"
+    values = (codigo_da_materia, codigo_chamada_str, descricao, titulo)
+    mycursor.execute(sql_command_for_database, values)
 
     try:
         mycursor.execute(sqlCommand, valuesDatabase)
