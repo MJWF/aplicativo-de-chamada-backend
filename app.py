@@ -403,6 +403,9 @@ def return_presenca_pela_materia():
 @app.route('/fazer_chamada', methods=['POST'])
 def fazer_chamada():
     materia = request.form['materia_escolhida']
+    titulo = request.form['titulo']
+    descricao = request.form['descricao']
+    
     print(materia)
     #materia = 'Geografia'
     codigo_chamada = random.randint(230000, 239999)
@@ -411,8 +414,19 @@ def fazer_chamada():
 
     sql_command_for_database = "UPDATE Materia SET Aulas_Dadas = Aulas_Dadas + 1, Codigo_da_Chamada = %s WHERE Nome = %s;" 
     values = (codigo_chamada_str, materia)
-    try:
-        mycursor.execute(sql_command_for_database, values)
+    mycursor.execute(sql_command_for_database, values)
+    db.commit()
+
+    sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
+    values = (materia,)
+    mycursor.execute(sql_command_for_database, values)
+
+    codigo_da_materia = str(mycursor.fetchone()) #nao sei se funciona, qualquer coisa deixa que nem o de cima
+
+    sql_command_for_database = "INSERT INTO Aulas_dadas VALUES (%s, %s, %s, %s, 0);"
+    values = (codigo_da_materia, codigo_chamada_str, descricao, titulo)
+
+    try:  
         db.commit()
     except:
         return jsonify({'realizar_chamada': 'Error'})
