@@ -532,36 +532,46 @@ def presenca_coletiva():
 
     codigo_chamada = random.randint(230000, 239999)
     codigo_chamada_str = str(codigo_chamada)
+
+    try:
+        mycursor = db.cursor()
+        sqlCommand = "UPDATE Materia_Aluno SET Frequencia = Frequencia + 1 WHERE Nome_Materia IN (SELECT Codigo FROM Materia WHERE Nome = %s);"
+        valuesDatabase = (nomeMateria,)
+        mycursor.execute(sqlCommand, valuesDatabase)
+
+    except: 
+        return jsonify({'presenca_coletiva': "error"})
+
+    try:
+        sqlCommand = "UPDATE Materia SET Aulas_Dadas = (Aulas_Dadas + 1) WHERE Nome = %s;"
+        valuesDatabase = (nomeMateria,)
+        mycursor.execute(sqlCommand, valuesDatabase)
+        db.commit()
+
+    except: 
+        return jsonify({'presenca_coletiva': "error"})
+
+    try:
+        sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
+        values = (nomeMateria,)
+        mycursor.execute(sql_command_for_database, values)
+    except: 
+        return jsonify({'presenca_coletiva': "error"})
     
-    mycursor = db.cursor()
-    sqlCommand = "UPDATE Materia_Aluno SET Frequencia = Frequencia + 1 WHERE Nome_Materia IN (SELECT Codigo FROM Materia WHERE Nome = %s);"
-    valuesDatabase = (nomeMateria,)
-    mycursor.execute(sqlCommand, valuesDatabase)
-    db.commit()
-
-    """sqlCommand = "UPDATE Materia SET Aulas_Dadas = Aulas_Dadas + 1 WHERE Nome = %s;"
-    valuesDatabase = (nomeMateria,)
-    mycursor.execute(sqlCommand, valuesDatabase)
-    db.commit()"""
-
-    sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
-    values = (nomeMateria,)
-    mycursor.execute(sql_command_for_database, values)
-
     codigo_da_materia = mycursor.fetchone()
     codigo_da_materia = str(codigo_da_materia[0])
 
     sql_command_for_database = "INSERT INTO Aulas_dadas VALUES (%s, %s, %s, %s, 1);"
     values = (codigo_da_materia, codigo_chamada_str, descricao, titulo)
     mycursor.execute(sql_command_for_database, values)
-
+    
     try:
-        mycursor.execute(sqlCommand, valuesDatabase)
-        db.commit()
+        mycursor.execute(sql_command_for_database, values)
     except:
         return jsonify({'presenca_coletiva': "error"})
 
     return jsonify({'presenca_coletiva': "OK"})
+
 
 @app.route('/representante', methods=['POST'])
 def representante():
@@ -593,7 +603,7 @@ def representante():
 
 
 @app.route('/returnAulasPresentes', methods=['POST'])
-def returnAulasFaltantes():
+def returnAulasPresentes():
 
     emailAluno = request.form['email']
     codigoMateria = request.form['materia']
@@ -622,8 +632,42 @@ def returnAulasFaltantes():
         return jsonify({'presenca_coletiva': "error"})
 
 
-"""@app.route('/returnAulasFaltantes', methods=['POST'])
-def returnAulasFaltantes():"""
+@app.route('/returnAulasFaltantes', methods=['POST'])
+def returnAulasFaltantes():
+
+    emailAluno = request.form['email']
+    nomeMateria = request.form['materia']
+
+    mycursor = db.cursor()
+    sqlCommand = "SELECT * Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
+    valuesDatabase = (emailAluno, nomeMateria)
+    mycursor.execute(sqlCommand, valuesDatabase)
+    aulas_presenca = mycursor.fetchall()
+    aulas_presenca_set = set(aulas_presenca)
+
+
+
+    sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
+    values = (nomeMateria,)
+    mycursor.execute(sql_command_for_database, values)
+    res_codigo = mycursor.fetchone()
+    codigo_res = str(res_codigo[0])
+
+
+
+    sql_command_for_database = "SELECT * FROM Aulas_dadas WHERE codigo_materia = %s"
+    values = (codigo_res,)
+    mycursor.execute(sql_command_for_database, values)
+    aulas_dadas = mycursor.fetchall()
+
+    aulas_dadas_set = set(aulas_dadas)
+
+
+    aulas_nao_presentes = (aulas_dadas_set - aulas_presenca_set)
+    list_aulas_nao_presentes = list(aulas_nao_presentes)
+
+    print(list_aulas_nao_presentes)
+    return
 
 
 
