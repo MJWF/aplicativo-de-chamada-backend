@@ -539,6 +539,11 @@ def presenca_coletiva():
     mycursor.execute(sqlCommand, valuesDatabase)
     db.commit()
 
+    sqlCommand = "UPDATE Materia SET Aulas_Dadas = Aulas_Dadas + 1 WHERE Nome = %s;"
+    valuesDatabase = (nomeMateria,)
+    mycursor.execute(sqlCommand, valuesDatabase)
+    db.commit()
+
     sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
     values = (nomeMateria,)
     mycursor.execute(sql_command_for_database, values)
