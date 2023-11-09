@@ -539,10 +539,10 @@ def presenca_coletiva():
     mycursor.execute(sqlCommand, valuesDatabase)
     db.commit()
 
-    sqlCommand = "UPDATE Materia SET Aulas_Dadas = Aulas_Dadas + 1 WHERE Nome = %s;"
+    """sqlCommand = "UPDATE Materia SET Aulas_Dadas = Aulas_Dadas + 1 WHERE Nome = %s;"
     valuesDatabase = (nomeMateria,)
     mycursor.execute(sqlCommand, valuesDatabase)
-    db.commit()
+    db.commit()"""
 
     sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
     values = (nomeMateria,)
@@ -592,14 +592,14 @@ def representante():
        return jsonify({'presenca_coletiva': "False"}) 
 
 
-@app.route('/returnAulasFaltantes', methods=['POST'])
+@app.route('/returnAulasPresentes', methods=['POST'])
 def returnAulasFaltantes():
 
     emailAluno = request.form['email']
     codigoMateria = request.form['materia']
 
     mycursor = db.cursor()
-    sqlCommand = "SELECT * Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia;"
+    sqlCommand = "SELECT * Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
     valuesDatabase = (emailAluno, codigoMateria)
 
     try:
@@ -621,6 +621,9 @@ def returnAulasFaltantes():
     except:
         return jsonify({'presenca_coletiva': "error"})
 
+
+"""@app.route('/returnAulasFaltantes', methods=['POST'])
+def returnAulasFaltantes():"""
 
 
 
