@@ -559,10 +559,31 @@ def representante():
 @app.route('/returnAulasFaltantes', methods=['POST'])
 def returnAulasFaltantes():
 
+    emailAluno = request.form['email']
+    codigoMateria = request.form['materia']
 
+    mycursor = db.cursor()
+    sqlCommand = "SELECT * Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia;"
+    valuesDatabase = (emailAluno, codigoMateria)
 
-    nomeAluno = request.form['Nome']
+    try:
+        mycursor.execute(sqlCommand, valuesDatabase)
+        sql_response = mycursor.fetchall()
 
+        data = []
+
+        for linha in sql_response:
+            AulasPresenca = {
+                'CodigoAluno': linha[0],
+                'CodigoPresenca': linha[1],
+                'CodigoMateria': linha[2]
+            }
+
+            data.append(AulasPresenca)
+        return jsonify(data)
+        
+    except:
+        return jsonify({'presenca_coletiva': "error"})
 
 
 
