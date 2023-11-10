@@ -464,6 +464,10 @@ def verificar_codigo_inserido_pelo_aluno():
     code_from_user = request.form['code']
     materia = request.form['materia']
 
+    # email = "janedoe@gmail.com"
+    # code_from_user = "238261"
+    # materia = "Projetos"
+
     mycursor = db.cursor()
     sql_command_for_database = "SELECT Codigo_da_chamada, Codigo FROM Materia WHERE Nome = %s"
     values = (materia,)
@@ -482,7 +486,7 @@ def verificar_codigo_inserido_pelo_aluno():
 
         #Alteração feitas para organizar as aulas
         mycursor = db.cursor()
-        sql_command_for_database = "INSERT INTO AulasComPresenca (CodigoUsuario, CodigoPresencaAula, CodigoMateria) VALUES (%s, %s, %s);"
+        sql_command_for_database = "INSERT INTO Aulas_Com_Presenca (Codigo_Usuario, Codigo_Presenca, Codigo_Materia) VALUES (%s, %s, %s);"
         values = (email, code_from_discipline, discipline_code)
         mycursor.execute(sql_command_for_database, values)
         db.commit()
@@ -634,6 +638,27 @@ def returnAulasPresentes():
         return jsonify({'presenca_coletiva': "error"})
 
 
+@app.route('/return_aulas_da_materia', methods=['POST'])
+def aulas_materia():
+    materia = request.form['materia']
+    mycursor = db.cursor()
+
+    sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
+    values = (materia,)
+    mycursor.execute(sql_command_for_database, values)
+    res_codigo = mycursor.fetchone()
+    codigo_res = str(res_codigo[0])
+
+
+
+    sql_command_for_database = "SELECT * FROM Aulas_dadas WHERE codigo_materia = %s"
+    values = (codigo_res,)
+    mycursor.execute(sql_command_for_database, values)
+    aulas_dadas = mycursor.fetchall()
+    print(aulas_dadas)
+
+    return jsonify({'Aulas_dadas': aulas_dadas})
+
 
 @app.route('/returnAulasFaltantes', methods=['POST'])
 def returnAulasFaltantes():
@@ -642,13 +667,6 @@ def returnAulasFaltantes():
     nomeMateria = request.form['materia']
 
     mycursor = db.cursor()
-    sqlCommand = "SELECT * from Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
-    valuesDatabase = (emailAluno, nomeMateria)
-    mycursor.execute(sqlCommand, valuesDatabase)
-    aulas_presenca = mycursor.fetchall()
-    aulas_presenca_set = set(aulas_presenca)
-
-
 
     sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
     values = (nomeMateria,)
@@ -657,19 +675,31 @@ def returnAulasFaltantes():
     codigo_res = str(res_codigo[0])
 
 
-    sql_command_for_database = "SELECT * FROM Aulas_dadas WHERE codigo_materia = %s"
-    values = (codigo_res,)
-    mycursor.execute(sql_command_for_database, values)
-    aulas_dadas = mycursor.fetchall()
+    
+    #sqlCommand = "SELECT * from Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
+    sqlCommand = "SELECT * FROM Aulas_dadas where codigo_materia = %s AND codigo_presenca NOT IN (SELECT Codigo_Presenca from Aulas_com_Presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s);"
+    valuesDatabase = (codigo_res, emailAluno, codigo_res)
+    mycursor.execute(sqlCommand, valuesDatabase)
+    aulas_sem_presenca = mycursor.fetchall()
+    
+    print(aulas_sem_presenca)
+    return jsonify({'Aulas_com_falta': aulas_sem_presenca})
 
-    aulas_dadas_set = set(aulas_dadas)
 
 
-    aulas_nao_presentes = (aulas_dadas_set - aulas_presenca_set)
-    list_aulas_nao_presentes = list(aulas_nao_presentes)
+    # sql_command_for_database = "SELECT * FROM Aulas_dadas WHERE codigo_materia = %s"
+    # values = (codigo_res,)
+    # mycursor.execute(sql_command_for_database, values)
+    # aulas_dadas = mycursor.fetchall()
 
-    print(list_aulas_nao_presentes)
-    return jsonify(list_aulas_nao_presentes)
+    # aulas_dadas_set = set(aulas_dadas)
+
+
+    # aulas_nao_presentes = (aulas_dadas_set - aulas_presenca_set)
+    # list_aulas_nao_presentes = list(aulas_nao_presentes)
+
+    # print(list_aulas_nao_presentes)
+
 
 
 
