@@ -593,10 +593,10 @@ def representante():
         try:
             mycursor.execute(sqlCommand, valuesDatabase)
             db.commit()
-            return jsonify({'presenca_coletiva': "True"})
+            return jsonify({'representante': "True"})
         
         except:
-            return jsonify({'presenca_coletiva': "error"})
+            return jsonify({'representante': "error"})
     
     else:
        return jsonify({'presenca_coletiva': "False"}) 
@@ -626,10 +626,13 @@ def returnAulasPresentes():
             }
 
             data.append(AulasPresenca)
+
+        print(data)
         return jsonify(data)
         
     except:
         return jsonify({'presenca_coletiva': "error"})
+
 
 
 @app.route('/returnAulasFaltantes', methods=['POST'])
@@ -639,7 +642,7 @@ def returnAulasFaltantes():
     nomeMateria = request.form['materia']
 
     mycursor = db.cursor()
-    sqlCommand = "SELECT * Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
+    sqlCommand = "SELECT * from Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
     valuesDatabase = (emailAluno, nomeMateria)
     mycursor.execute(sqlCommand, valuesDatabase)
     aulas_presenca = mycursor.fetchall()
@@ -654,7 +657,6 @@ def returnAulasFaltantes():
     codigo_res = str(res_codigo[0])
 
 
-
     sql_command_for_database = "SELECT * FROM Aulas_dadas WHERE codigo_materia = %s"
     values = (codigo_res,)
     mycursor.execute(sql_command_for_database, values)
@@ -667,7 +669,7 @@ def returnAulasFaltantes():
     list_aulas_nao_presentes = list(aulas_nao_presentes)
 
     print(list_aulas_nao_presentes)
-    return
+    return jsonify(list_aulas_nao_presentes)
 
 
 
