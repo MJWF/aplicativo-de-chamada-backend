@@ -377,7 +377,7 @@ def return_presenca_pela_materia():
     # Nesse select eu juntei as tabelas aluno e materia_aluno para conseguir pegar as informações certas para retorno
     # Deixei ordenado de ordem alfabética
     mycursor = db.cursor()
-    sql_command_for_database = "SELECT Nome, RA, Frequencia FROM aluno LEFT JOIN Materia_Aluno ON aluno.Email = Materia_Aluno.Nome_Aluno Where Nome_Materia = %s order by Nome;" 
+    sql_command_for_database = "SELECT Nome, RA, Frequencia, representante FROM aluno LEFT JOIN Materia_Aluno ON aluno.Email = Materia_Aluno.Nome_Aluno Where Nome_Materia = %s order by Nome;" 
     values = (int(Codigo_Materia),)
     mycursor.execute(sql_command_for_database, values)
     sql_response = mycursor.fetchall()
