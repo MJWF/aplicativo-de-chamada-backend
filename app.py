@@ -613,7 +613,7 @@ def returnAulasPresentes():
     codigoMateria = request.form['materia']
 
     mycursor = db.cursor()
-    sqlCommand = "SELECT * Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
+    sqlCommand = "SELECT * FROM Aulas_dadas WHERE codigo_presenca IN (SELECT Codigo_Presenca FROM Aulas_com_Presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s);"
     valuesDatabase = (emailAluno, codigoMateria)
 
     try:
@@ -624,9 +624,9 @@ def returnAulasPresentes():
 
         for linha in sql_response:
             AulasPresenca = {
-                'CodigoAluno': linha[0],
+                'Titulo': linha[3],
                 'CodigoPresenca': linha[1],
-                'CodigoMateria': linha[2]
+                'Descricao': linha[2]
             }
 
             data.append(AulasPresenca)
