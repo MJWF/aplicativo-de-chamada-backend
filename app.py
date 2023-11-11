@@ -672,11 +672,11 @@ def aulas_materia():
     return jsonify({'Aulas_dadas': aulas_dadas})
 
 
-@app.route('/returnAulasFaltantes', methods=['POST'])
+@app.route('/returnAulasFaltantes', methods=['GET'])
 def returnAulasFaltantes():
 
-    emailAluno = request.form['email']
-    nomeMateria = request.form['materia']
+    emailAluno = "janedoe@gmail.com"#request.form['email']
+    nomeMateria = "Matematica"#request.form['materia']
 
     mycursor = db.cursor()
 
@@ -701,14 +701,13 @@ def returnAulasFaltantes():
 
         for linha in aulas_sem_presenca:
 
-            if aulas_sem_presenca[4] == 0:
+            if linha[4] == 0:
                 AulasSemPresenca = {
                     'Titulo': linha[3],
                     'CodigoPresenca': linha[1],
                     'Descricao': linha[2]
                 }
-
-            data.append(AulasSemPresenca)
+                data.append(AulasSemPresenca)
         
         return jsonify(data)
         
