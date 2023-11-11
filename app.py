@@ -695,28 +695,18 @@ def returnAulasFaltantes():
         mycursor.execute(sqlCommand, valuesDatabase)
         aulas_sem_presenca = mycursor.fetchall()
 
+        print(aulas_sem_presenca)
+
         data = []
 
         for linha in aulas_sem_presenca:
-            AulasSemPresenca = {
-                'Titulo': linha[3],
-                'CodigoPresenca': linha[1],
-                'Descricao': linha[2]
-            }
 
-            data.append(AulasSemPresenca)
-
-        sqlCommand = "SELECT * FROM Aulas_dadas WHERE coletiva = 0 AND codigo_materia = (SELECT Codigo FROM Materia WHERE Nome = %s);"
-        valuesDatabase = (nomeMateria,)
-        mycursor.execute(sqlCommand, valuesDatabase)
-        sql_response = mycursor.fetchall()
-
-        for linha in sql_response:
-            AulasSemPresenca = {
-                'Titulo': linha[3],
-                'CodigoPresenca': linha[1],
-                'Descricao': linha[2]
-            }
+            if aulas_sem_presenca[4] == 0:
+                AulasSemPresenca = {
+                    'Titulo': linha[3],
+                    'CodigoPresenca': linha[1],
+                    'Descricao': linha[2]
+                }
 
             data.append(AulasSemPresenca)
         
