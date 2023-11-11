@@ -613,14 +613,29 @@ def returnAulasPresentes():
     nomeMateria = request.form['materia']
 
     mycursor = db.cursor()
-    sqlCommand = "SELECT * FROM Aulas_dadas WHERE codigo_presenca IN (SELECT Codigo_Presenca FROM Aulas_com_Presenca WHERE Codigo_Usuario = %s AND Codigo_Materia IN (SELECT Codigo FROM Materia WHERE Nome = %s)) AND coletiva = 1;"
+    sqlCommand = "SELECT * FROM Aulas_dadas WHERE codigo_presenca IN (SELECT Codigo_Presenca FROM Aulas_com_Presenca WHERE Codigo_Usuario = %s AND Codigo_Materia IN (SELECT Codigo FROM Materia WHERE Nome = %s));"
     valuesDatabase = (emailAluno, nomeMateria)
 
+    mycursor.execute(sqlCommand, valuesDatabase)
+    sql_response = mycursor.fetchall()
+
+    data = []
+
+    for linha in sql_response:
+        AulasPresenca = {
+            'Titulo': linha[3],
+            'CodigoPresenca': linha[1],
+            'Descricao': linha[2]
+        }
+
+        data.append(AulasPresenca)
+    print(data)
+
     try:
+        sqlCommand = "SELECT * FROM Aulas_dadas WHERE coletiva = 1 AND codigo_materia = (SELECT Codigo FROM Materia WHERE Nome = %s);"
+        valuesDatabase = (nomeMateria,)
         mycursor.execute(sqlCommand, valuesDatabase)
         sql_response = mycursor.fetchall()
-
-        data = []
 
         for linha in sql_response:
             AulasPresenca = {
@@ -631,7 +646,6 @@ def returnAulasPresentes():
 
             data.append(AulasPresenca)
 
-        print(data)
         return jsonify(data)
         
     except:
