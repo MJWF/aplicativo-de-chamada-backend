@@ -672,11 +672,11 @@ def aulas_materia():
     return jsonify({'Aulas_dadas': aulas_dadas})
 
 
-@app.route('/returnAulasFaltantes', methods=['GET'])
+@app.route('/returnAulasFaltantes', methods=['POST'])
 def returnAulasFaltantes():
 
-    emailAluno = "janedoe@gmail.com"#request.form['email']
-    nomeMateria = "Matematica"#request.form['materia']
+    emailAluno = request.form['email']
+    nomeMateria = request.form['materia']
 
     mycursor = db.cursor()
 
