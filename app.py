@@ -610,11 +610,11 @@ def representante():
 def returnAulasPresentes():
 
     emailAluno = request.form['email']
-    codigoMateria = request.form['materia']
+    nomeMateria = request.form['materia']
 
     mycursor = db.cursor()
-    sqlCommand = "SELECT * Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
-    valuesDatabase = (emailAluno, codigoMateria)
+    sqlCommand = "SELECT * FROM Aulas_dadas WHERE codigo_presenca IN (SELECT Codigo_Presenca FROM Aulas_com_Presenca WHERE Codigo_Usuario = %s AND Codigo_Materia IN (SELECT Codigo FROM Materia WHERE Nome = %s));"
+    valuesDatabase = (emailAluno, nomeMateria)
 
     try:
         mycursor.execute(sqlCommand, valuesDatabase)
@@ -624,9 +624,9 @@ def returnAulasPresentes():
 
         for linha in sql_response:
             AulasPresenca = {
-                'CodigoAluno': linha[0],
+                'Titulo': linha[3],
                 'CodigoPresenca': linha[1],
-                'CodigoMateria': linha[2]
+                'Descricao': linha[2]
             }
 
             data.append(AulasPresenca)
@@ -675,30 +675,34 @@ def returnAulasFaltantes():
     codigo_res = str(res_codigo[0])
 
 
-    
     #sqlCommand = "SELECT * from Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
-    sqlCommand = "SELECT * FROM Aulas_dadas where codigo_materia = %s AND codigo_presenca NOT IN (SELECT Codigo_Presenca from Aulas_com_Presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s);"
+    sqlCommand = "SELECT * FROM Aulas_dadas where codigo_materia = %s AND codigo_presenca NOT IN (SELECT Codigo_Presenca from Aulas_com_Presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s) AND coletiva = 0;"
     valuesDatabase = (codigo_res, emailAluno, codigo_res)
-    mycursor.execute(sqlCommand, valuesDatabase)
-    aulas_sem_presenca = mycursor.fetchall()
     
-    print(aulas_sem_presenca)
-    return jsonify({'Aulas_com_falta': aulas_sem_presenca})
+    aulas_sem_presenca = mycursor.fetchall()
 
+    try:
+        mycursor.execute(sqlCommand, valuesDatabase)
+        aulas_sem_presenca = mycursor.fetchall()
 
+        data = []
 
-    # sql_command_for_database = "SELECT * FROM Aulas_dadas WHERE codigo_materia = %s"
-    # values = (codigo_res,)
-    # mycursor.execute(sql_command_for_database, values)
-    # aulas_dadas = mycursor.fetchall()
+        for linha in aulas_sem_presenca:
+            AulasSemPresenca = {
+                'Titulo': linha[3],
+                'CodigoPresenca': linha[1],
+                'Descricao': linha[2]
+            }
 
-    # aulas_dadas_set = set(aulas_dadas)
+            data.append(AulasSemPresenca)
 
-
-    # aulas_nao_presentes = (aulas_dadas_set - aulas_presenca_set)
-    # list_aulas_nao_presentes = list(aulas_nao_presentes)
-
-    # print(list_aulas_nao_presentes)
+        print(data)
+        return jsonify(data)
+        
+    except:
+        return jsonify({'presenca_coletiva': "error"})
+    
+    
 
 
 
