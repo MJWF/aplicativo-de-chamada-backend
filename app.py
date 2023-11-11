@@ -663,8 +663,6 @@ def aulas_materia():
     res_codigo = mycursor.fetchone()
     codigo_res = str(res_codigo[0])
 
-
-
     sql_command_for_database = "SELECT * FROM Aulas_dadas WHERE codigo_materia = %s"
     values = (codigo_res,)
     mycursor.execute(sql_command_for_database, values)
@@ -692,8 +690,6 @@ def returnAulasFaltantes():
     #sqlCommand = "SELECT * from Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
     sqlCommand = "SELECT * FROM Aulas_dadas where codigo_materia = %s AND codigo_presenca NOT IN (SELECT Codigo_Presenca from Aulas_com_Presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s) AND coletiva = 0;"
     valuesDatabase = (codigo_res, emailAluno, codigo_res)
-    
-    aulas_sem_presenca = mycursor.fetchall()
 
     try:
         mycursor.execute(sqlCommand, valuesDatabase)
@@ -710,7 +706,20 @@ def returnAulasFaltantes():
 
             data.append(AulasSemPresenca)
 
-        print(data)
+        sqlCommand = "SELECT * FROM Aulas_dadas WHERE coletiva = 1 AND codigo_materia = (SELECT Codigo FROM Materia WHERE Nome = %s);"
+        valuesDatabase = (nomeMateria,)
+        mycursor.execute(sqlCommand, valuesDatabase)
+        sql_response = mycursor.fetchall()
+
+        for linha in sql_response:
+            AulasSemPresenca = {
+                'Titulo': linha[3],
+                'CodigoPresenca': linha[1],
+                'Descricao': linha[2]
+            }
+
+            data.append(AulasSemPresenca)
+        
         return jsonify(data)
         
     except:
