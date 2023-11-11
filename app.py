@@ -688,7 +688,7 @@ def returnAulasFaltantes():
 
 
     #sqlCommand = "SELECT * from Aulas_com_presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s;"
-    sqlCommand = "SELECT * FROM Aulas_dadas where codigo_materia = %s AND codigo_presenca NOT IN (SELECT Codigo_Presenca from Aulas_com_Presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s) AND coletiva = 0;"
+    sqlCommand = "SELECT * FROM Aulas_dadas where codigo_materia = %s AND codigo_presenca NOT IN (SELECT Codigo_Presenca from Aulas_com_Presenca WHERE Codigo_Usuario = %s AND Codigo_Materia = %s);"
     valuesDatabase = (codigo_res, emailAluno, codigo_res)
 
     try:
@@ -706,7 +706,7 @@ def returnAulasFaltantes():
 
             data.append(AulasSemPresenca)
 
-        sqlCommand = "SELECT * FROM Aulas_dadas WHERE coletiva = 1 AND codigo_materia = (SELECT Codigo FROM Materia WHERE Nome = %s);"
+        sqlCommand = "SELECT * FROM Aulas_dadas WHERE coletiva = 0 AND codigo_materia = (SELECT Codigo FROM Materia WHERE Nome = %s);"
         valuesDatabase = (nomeMateria,)
         mycursor.execute(sqlCommand, valuesDatabase)
         sql_response = mycursor.fetchall()
