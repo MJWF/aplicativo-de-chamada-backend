@@ -565,11 +565,8 @@ def presenca_coletiva():
     codigo_da_materia = mycursor.fetchone()
     codigo_da_materia = str(codigo_da_materia[0])
 
-    print("chegou aqui")
-
     sql_command_for_database = "INSERT INTO Aulas_dadas VALUES (%s, %s, %s, %s, 1);"
     values = (codigo_da_materia, codigo_chamada_str, descricao, titulo)
-    mycursor.execute(sql_command_for_database, values)
     
     try:
         mycursor.execute(sql_command_for_database, values)
