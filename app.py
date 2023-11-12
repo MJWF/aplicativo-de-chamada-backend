@@ -486,7 +486,7 @@ def verificar_codigo_inserido_pelo_aluno():
 
         #Alteração feitas para organizar as aulas
         mycursor = db.cursor()
-        sql_command_for_database = "INSERT INTO Aulas_Com_Presenca (Codigo_Usuario, Codigo_Presenca, Codigo_Materia) VALUES (%s, %s, %s);"
+        sql_command_for_database = "INSERT INTO Aulas_com_Presenca (Codigo_Usuario, Codigo_Presenca, Codigo_Materia) VALUES (%s, %s, %s);"
         values = (email, code_from_discipline, discipline_code)
         mycursor.execute(sql_command_for_database, values)
         db.commit()
