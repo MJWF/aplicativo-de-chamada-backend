@@ -715,9 +715,54 @@ def returnAulasFaltantes():
     
     
 
+@app.route('/fechar_chamada', methods=['POST'])
+def fechar_chamada():
+    materia = request.form['materia']
+    # materia = "Portugues"
+    mycursor = db.cursor()
 
+    sql_command_for_database = "UPDATE Materia SET Codigo_da_Chamada = 'xxxxxx' WHERE Nome = %s;"
+    values = (materia,)
+    mycursor.execute(sql_command_for_database, values)
+    db.commit()
 
+    return jsonify({'status': "chamada fechada com sucesso!"})
 
+@app.route('/enviar_solicitacao', methods=['POST'])
+def enviar_solicitacao():
+    Aluno = request.form['nomeAluno']
+    nome_materia = request.form['nomeMateria']
+    descricao = request.form['descricao']
+
+    # Aluno = 'Jane Doe'
+    # nome_materia = 'Geografia'
+    # descricao = 'nao consigo criar um node4'
+
+    mycursor = db.cursor()
+    sql_command_for_database = "INSERT INTO Solicitacoes (Descricao, Aluno, NomeMateria) VALUES (%s, %s, %s);"
+    values = (descricao, Aluno, nome_materia)
+    mycursor.execute(sql_command_for_database, values)
+    db.commit()
+    return jsonify({'status': 'solicitacao enviada'})
+
+@app.route('/ler_solicitacao', methods=['POST'])
+def ler_solicitacao():
+    #PRECISA DE ALTERCAO
+    Rep = request.form['emailAluno']
+    #Rep = 'JaneDoe@gmail.com'
+
+    mycursor = db.cursor()
+
+    #resultados = []
+
+    #for materia in materias:
+        # Usando a cláusula IN para verificar se a matéria está na lista de matérias
+    sql_command_for_database = "SELECT * FROM Solicitacoes WHERE NomeMateria IN (select NomeMateria FROM Representante WHERE EmailAluno = %s)"
+    values = (Rep,)
+    mycursor.execute(sql_command_for_database, values)
+    resultados = mycursor.fetchall()
+
+    return jsonify(resultados)
 
 
 if __name__ == '__main__':
