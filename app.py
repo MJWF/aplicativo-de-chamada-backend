@@ -576,23 +576,32 @@ def presenca_coletiva():
     return jsonify({'presenca_coletiva': "OK"})
 
 
-@app.route('/representante', methods=['POST'])
+@app.route('/representante', methods=['GET'])
 def representante():
 
     nomeAluno = request.form['Nome']
+    nomeMateria = request.form['Materia']
     
     mycursor = db.cursor()
-    sqlCommand = "SELECT * FROM aluno WHERE Nome = %s;"
-    valuesDatabase = (nomeAluno,)
+    sqlCommand = "SELECT * FROM Representante WHERE NomeMateria = %s AND EmailAluno = (SELECT Email FROM aluno WHERE Nome = %s);"
+    valuesDatabase = (nomeAluno, nomeMateria)
 
     mycursor.execute(sqlCommand, valuesDatabase)
 
     temEsseAluno = mycursor.fetchone()
 
-    if temEsseAluno is not None:
+    if temEsseAluno is None:
         mycursor = db.cursor()
-        sqlCommand = "Update aluno SET Representante = 'True' WHERE Nome = %s;"
-        valuesDatabase = (nomeAluno,)
+        sqlCommand = "SELECT Email FROM aluno WHERE Nome = %s;"
+        valuesDatabase = (nomeAluno, nomeMateria)
+        mycursor.execute(sqlCommand, valuesDatabase)
+
+        SqlResponse = mycursor.fetchone()
+        EmailAluno = SqlResponse[0]
+
+        mycursor = db.cursor()
+        sqlCommand = "INSERT INTO Representante (EmailAluno, NomeMateria) VALUES (%s, %s);"
+        valuesDatabase = (EmailAluno, nomeMateria)
         try:
             mycursor.execute(sqlCommand, valuesDatabase)
             db.commit()
@@ -600,9 +609,9 @@ def representante():
         
         except:
             return jsonify({'representante': "error"})
-    
+        
     else:
-       return jsonify({'presenca_coletiva': "False"}) 
+       return jsonify({'representante': "False"}) 
 
 
 @app.route('/returnAulasPresentes', methods=['POST'])
