@@ -715,10 +715,10 @@ def returnAulasFaltantes():
     
     
 
-@app.route('/fechar_chamada', methods=['GET'])
+@app.route('/fechar_chamada', methods=['POST'])
 def fechar_chamada():
-   # materia = request.form['materia']
-    materia = "Portugues"
+    materia = request.form['materia']
+    # materia = "Portugues"
     mycursor = db.cursor()
 
     sql_command_for_database = "UPDATE Materia SET Codigo_da_Chamada = 'xxxxxx' WHERE Nome = %s;"
@@ -728,15 +728,15 @@ def fechar_chamada():
 
     return jsonify({'status': "chamada fechada com sucesso!"})
 
-@app.route('/enviar_solicitacao', methods=['GET'])
+@app.route('/enviar_solicitacao', methods=['POST'])
 def enviar_solicitacao():
-    #Aluno = request.form['nomeAluno']
-    #nome_materia = request.form['nomeMateria']
-    #descricao = request.form['descricao']
+    Aluno = request.form['nomeAluno']
+    nome_materia = request.form['nomeMateria']
+    descricao = request.form['descricao']
 
-    Aluno = 'Jane Doe'
-    nome_materia = 'Geografia'
-    descricao = 'nao consigo criar um node4'
+    # Aluno = 'Jane Doe'
+    # nome_materia = 'Geografia'
+    # descricao = 'nao consigo criar um node4'
 
     mycursor = db.cursor()
     sql_command_for_database = "INSERT INTO Solicitacoes (Descricao, Aluno, NomeMateria) VALUES (%s, %s, %s);"
@@ -745,10 +745,11 @@ def enviar_solicitacao():
     db.commit()
     return jsonify({'status': 'solicitacao enviada'})
 
-@app.route('/ler_solicitacao', methods=['GET'])
+@app.route('/ler_solicitacao', methods=['POST'])
 def ler_solicitacao():
-    #materias = ['Portugues', 'Matematica', 'Artes']
-    Rep = 'JaneDoe@gmail.com'
+    #PRECISA DE ALTERCAO
+    Rep = request.form['emailAluno']
+    #Rep = 'JaneDoe@gmail.com'
 
     mycursor = db.cursor()
 
