@@ -576,13 +576,12 @@ def presenca_coletiva():
     return jsonify({'presenca_coletiva': "OK"})
 
 
-@app.route('/representante', methods=['GET'])
+@app.route('/representante', methods=['POST'])
 def representante():
 
-    #nomeAluno = request.form['Nome']
-    #nomeMateria = request.form['Materia']
-    nomeAluno = 'Jane Doe'
-    nomeMateria = 'Portugues'
+    nomeAluno = request.form['Nome']
+    nomeMateria = request.form['Materia']
+    
 
     mycursor = db.cursor()
     sqlCommand = "SELECT * FROM Representante WHERE CodigoMateria = (SELECT Codigo FROM Materia WHERE Nome = %s) AND EmailAluno = (SELECT Email FROM aluno WHERE Nome = %s);"
@@ -769,7 +768,7 @@ def enviar_solicitacao():
 def ler_solicitacao():
     #PRECISA DE ALTERCAO
     Rep = request.form['emailAluno']
-    #Rep = 'JaneDoe@gmail.com'
+    #Rep = 'janedoe@gmail.com'
 
     mycursor = db.cursor()
 
@@ -777,7 +776,7 @@ def ler_solicitacao():
 
     #for materia in materias:
         # Usando a cláusula IN para verificar se a matéria está na lista de matérias
-    sql_command_for_database = "SELECT * FROM Solicitacoes WHERE NomeMateria IN (select NomeMateria FROM Representante WHERE EmailAluno = %s)"
+    sql_command_for_database = "SELECT * FROM Solicitacoes WHERE NomeMateria IN (select Nome From Materia where Codigo IN (select CodigoMateria FROM Representante WHERE EmailAluno = %s));"
     values = (Rep,)
     mycursor.execute(sql_command_for_database, values)
     resultados = mycursor.fetchall()
