@@ -579,11 +579,13 @@ def presenca_coletiva():
 @app.route('/representante', methods=['GET'])
 def representante():
 
-    nomeAluno = request.form['Nome']
-    nomeMateria = request.form['Materia']
-    
+    #nomeAluno = request.form['Nome']
+    #nomeMateria = request.form['Materia']
+    nomeAluno = 'Jane Doe'
+    nomeMateria = 'Portugues'
+
     mycursor = db.cursor()
-    sqlCommand = "SELECT * FROM Representante WHERE NomeMateria = %s AND EmailAluno = (SELECT Email FROM aluno WHERE Nome = %s);"
+    sqlCommand = "SELECT * FROM Representante WHERE CodigoMateria = (SELECT Codigo FROM Materia WHERE Nome = %s) AND EmailAluno = (SELECT Email FROM aluno WHERE Nome = %s);"
     valuesDatabase = (nomeAluno, nomeMateria)
 
     mycursor.execute(sqlCommand, valuesDatabase)
@@ -593,15 +595,24 @@ def representante():
     if temEsseAluno is None:
         mycursor = db.cursor()
         sqlCommand = "SELECT Email FROM aluno WHERE Nome = %s;"
-        valuesDatabase = (nomeAluno, nomeMateria)
+        valuesDatabase = (nomeAluno,)
         mycursor.execute(sqlCommand, valuesDatabase)
 
+        
         SqlResponse = mycursor.fetchone()
         EmailAluno = SqlResponse[0]
 
         mycursor = db.cursor()
-        sqlCommand = "INSERT INTO Representante (EmailAluno, NomeMateria) VALUES (%s, %s);"
-        valuesDatabase = (EmailAluno, nomeMateria)
+        sqlCommand = "SELECT Codigo FROM Materia WHERE Nome = %s;"
+        valuesDatabase = (nomeMateria,)
+        mycursor.execute(sqlCommand, valuesDatabase)
+        
+        SqlResponse = mycursor.fetchone()
+        CodigoMateia = SqlResponse[0]
+
+        mycursor = db.cursor()
+        sqlCommand = "INSERT INTO Representante (EmailAluno, CodigoMateria) VALUES (%s, %s);"
+        valuesDatabase = (EmailAluno, CodigoMateia)
         try:
             mycursor.execute(sqlCommand, valuesDatabase)
             db.commit()
