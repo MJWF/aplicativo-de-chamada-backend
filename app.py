@@ -576,14 +576,12 @@ def presenca_coletiva():
     return jsonify({'presenca_coletiva': "OK"})
 
 
-@app.route('/representante', methods=['GET'])
+@app.route('/representante', methods=['POST'])
 def representante():
 
-    #nomeAluno = request.form['Nome']
-    #nomeMateria = request.form['Materia']
-    nomeAluno = 'Jane Doe'
-    nomeMateria = 'Portugues'
-
+    nomeAluno = request.form['Nome']
+    nomeMateria = request.form['Materia']
+    
     mycursor = db.cursor()
     sqlCommand = "SELECT * FROM Representante WHERE CodigoMateria = (SELECT Codigo FROM Materia WHERE Nome = %s) AND EmailAluno = (SELECT Email FROM aluno WHERE Nome = %s);"
     valuesDatabase = (nomeAluno, nomeMateria)
@@ -623,6 +621,37 @@ def representante():
         
     else:
        return jsonify({'representante': "False"}) 
+
+
+
+@app.route('/remover_representante', methods=['POST'])
+def remover_representante():
+
+    nomeAluno = request.form['Nome']
+    nomeMateria = request.form['Materia']
+
+    mycursor = db.cursor()
+    sqlCommand = "SELECT * FROM Representante WHERE EmailAluno = (SELECT Email FROM aluno WHERE Nome = %s) AND CodigoMateria = (SELECT Codigo FROM Materia WHERE Nome = %s);"
+    valuesDatabase = (nomeAluno, nomeMateria)
+    mycursor.execute(sqlCommand, valuesDatabase)
+
+    temEsseAluno = mycursor.fetchone()
+    print(temEsseAluno)
+    if temEsseAluno is not None:
+
+        mycursor = db.cursor()
+        sqlCommand = "DELETE FROM Representante WHERE EmailAluno = (SELECT Email FROM aluno WHERE Nome = %s) AND CodigoMateria  = (SELECT Codigo FROM Materia WHERE Nome = %s);"
+        valuesDatabase = (nomeAluno, nomeMateria)
+        try:
+            mycursor.execute(sqlCommand, valuesDatabase)
+            db.commit()
+            return jsonify({'representante': "True"})
+        
+        except:
+            return jsonify({'representante': "error"})
+        
+    else:
+        return jsonify({'representante': "False"}) 
 
 
 @app.route('/returnAulasPresentes', methods=['POST'])
@@ -769,7 +798,7 @@ def enviar_solicitacao():
 def ler_solicitacao():
     #PRECISA DE ALTERCAO
     Rep = request.form['emailAluno']
-    #Rep = 'JaneDoe@gmail.com'
+    #Rep = 'janedoe@gmail.com'
 
     mycursor = db.cursor()
 
@@ -777,13 +806,31 @@ def ler_solicitacao():
 
     #for materia in materias:
         # Usando a cláusula IN para verificar se a matéria está na lista de matérias
-    sql_command_for_database = "SELECT * FROM Solicitacoes WHERE NomeMateria IN (select NomeMateria FROM Representante WHERE EmailAluno = %s)"
+    sql_command_for_database = "SELECT * FROM Solicitacoes WHERE NomeMateria IN (select Nome From Materia where Codigo IN (select CodigoMateria FROM Representante WHERE EmailAluno = %s));"
     values = (Rep,)
     mycursor.execute(sql_command_for_database, values)
     resultados = mycursor.fetchall()
 
     return jsonify(resultados)
 
+
+@app.route('/remover_solicitacao', methods=['POST'])
+def remover_solicitacao():
+
+    ID = request.form['ID']
+
+    mycursor = db.cursor()
+    sql_command_for_database = "DELETE FROM Solicitacoes WHERE id = %s"
+    values = (ID,)
+    try:
+        mycursor.execute(sql_command_for_database, values)
+        db.commit()
+    except:
+        return jsonify({'remover_solicitacao': 'Error'})
+    
+    return jsonify({'remover_solicitacao': 'True'})
+
+    
 
 if __name__ == '__main__':
     app.run()
