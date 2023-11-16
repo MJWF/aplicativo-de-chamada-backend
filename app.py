@@ -582,7 +582,6 @@ def representante():
     nomeAluno = request.form['Nome']
     nomeMateria = request.form['Materia']
     
-
     mycursor = db.cursor()
     sqlCommand = "SELECT * FROM Representante WHERE CodigoMateria = (SELECT Codigo FROM Materia WHERE Nome = %s) AND EmailAluno = (SELECT Email FROM aluno WHERE Nome = %s);"
     valuesDatabase = (nomeAluno, nomeMateria)
@@ -622,6 +621,37 @@ def representante():
         
     else:
        return jsonify({'representante': "False"}) 
+
+
+
+@app.route('/remover_representante', methods=['POST'])
+def remover_representante():
+
+    nomeAluno = request.form['Nome']
+    nomeMateria = request.form['Materia']
+
+    mycursor = db.cursor()
+    sqlCommand = "SELECT * FROM Representante WHERE EmailAluno = (SELECT Email FROM aluno WHERE Nome = %s) AND CodigoMateria = (SELECT Codigo FROM Materia WHERE Nome = %s);"
+    valuesDatabase = (nomeAluno, nomeMateria)
+    mycursor.execute(sqlCommand, valuesDatabase)
+
+    temEsseAluno = mycursor.fetchone()
+    print(temEsseAluno)
+    if temEsseAluno is not None:
+
+        mycursor = db.cursor()
+        sqlCommand = "DELETE FROM Representante WHERE EmailAluno = (SELECT Email FROM aluno WHERE Nome = %s) AND CodigoMateria  = (SELECT Codigo FROM Materia WHERE Nome = %s);"
+        valuesDatabase = (nomeAluno, nomeMateria)
+        try:
+            mycursor.execute(sqlCommand, valuesDatabase)
+            db.commit()
+            return jsonify({'representante': "True"})
+        
+        except:
+            return jsonify({'representante': "error"})
+        
+    else:
+        return jsonify({'representante': "False"}) 
 
 
 @app.route('/returnAulasPresentes', methods=['POST'])
