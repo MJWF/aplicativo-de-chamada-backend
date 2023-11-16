@@ -814,5 +814,23 @@ def ler_solicitacao():
     return jsonify(resultados)
 
 
+@app.route('/remover_solicitacao', methods=['POST'])
+def remover_solicitacao():
+
+    ID = request.form['ID']
+
+    mycursor = db.cursor()
+    sql_command_for_database = "DELETE FROM Solicitacoes WHERE id = %s"
+    values = (ID,)
+    try:
+        mycursor.execute(sql_command_for_database, values)
+        db.commit()
+    except:
+        return jsonify({'remover_solicitacao': 'Error'})
+    
+    return jsonify({'remover_solicitacao': 'True'})
+
+    
+
 if __name__ == '__main__':
     app.run()
