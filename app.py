@@ -357,13 +357,13 @@ def return_alunos_materias():
 
     return jsonify(data)
 
-@app.route('/return_presenca_pela_materia', methods=['GET'])
+@app.route('/return_presenca_pela_materia', methods=['POST'])
 def return_presenca_pela_materia():
 
     #Recebe os parâmetros do frontend
     # materia precisa ser o código dela !!!!!
-    #materia = request.form['materia_escolhida']
-    materia = "Portugues"
+    materia = request.form['materia_escolhida']
+    #materia = "Portugues"
 
     # Seleciona o total de aulas daquela matéria
     mycursor = db.cursor()
