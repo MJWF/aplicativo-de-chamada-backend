@@ -357,12 +357,13 @@ def return_alunos_materias():
 
     return jsonify(data)
 
-@app.route('/return_presenca_pela_materia', methods=['POST'])
+@app.route('/return_presenca_pela_materia', methods=['GET'])
 def return_presenca_pela_materia():
 
     #Recebe os parâmetros do frontend
     # materia precisa ser o código dela !!!!!
-    materia = request.form['materia_escolhida']
+    #materia = request.form['materia_escolhida']
+    materia = "Portugues"
 
     # Seleciona o total de aulas daquela matéria
     mycursor = db.cursor()
@@ -400,15 +401,28 @@ def return_presenca_pela_materia():
     #jsonify contém Nome, Ra, Frequencia(%) nessa ordem
 
     mycursor = db.cursor()
-    sql_command_for_database = "SELECT Nome FROM aluno WHERE IN (SELECT EmailAluno FROM Representante WHERE CodigoMateria = (SELECT Codigo FROM Materia WHERE Nome = %s));"
+    sql_command_for_database = "SELECT Nome FROM aluno WHERE Email IN(SELECT EmailAluno FROM Representante WHERE CodigoMateria = (SELECT Codigo FROM Materia WHERE Nome = %s));"
     values = (materia,)
     mycursor.execute(sql_command_for_database, values)
     representantes = mycursor.fetchall()
+    representantes = list(representantes)
 
+    lista_representantes = []
+    for i in range(len(representantes)):
+        lista_representantes.append(representantes[i][0])
+    
     for i in range(len(sql_response)):
-        if sql_response[i][0] in representantes:
+        print(lista_representantes)
+        print(sql_response[i][0])
+
+        if sql_response[i][0] in lista_representantes:
+            
             sql_response[i] = list(sql_response[i]) 
-            sql_response[i][4] =  "True"
+            sql_response[i][3] =  "True"
+            sql_response[i] = tuple(sql_response[i])
+        else:
+            sql_response[i] = list(sql_response[i]) 
+            sql_response[i][3] =  "False"
             sql_response[i] = tuple(sql_response[i])
 
     return jsonify(sql_response)
