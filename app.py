@@ -398,6 +398,19 @@ def return_presenca_pela_materia():
     #print(sql_response)
     
     #jsonify contém Nome, Ra, Frequencia(%) nessa ordem
+
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT Nome FROM aluno WHERE IN (SELECT EmailAluno FROM Representante WHERE CodigoMateria = (SELECT Codigo FROM Materia WHERE Nome = %s));"
+    values = (materia,)
+    mycursor.execute(sql_command_for_database, values)
+    representantes = mycursor.fetchall()
+
+    for i in range(len(sql_response)):
+        if sql_response[i][0] in representantes:
+            sql_response[i] = list(sql_response[i]) 
+            sql_response[i][4] =  "True"
+            sql_response[i] = tuple(sql_response[i])
+
     return jsonify(sql_response)
 
 @app.route('/fazer_chamada', methods=['POST'])
