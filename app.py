@@ -815,8 +815,15 @@ def enviar_solicitacao():
     # descricao = 'nao consigo criar um node4'
 
     mycursor = db.cursor()
+    sqlCommand = "SELECT Nome FROM aluno WHERE Email = %s;"
+    valuesDatabase = (Aluno,)
+    mycursor.execute(sqlCommand, valuesDatabase) 
+    SqlResponse = mycursor.fetchone()
+    NomeAluno = SqlResponse[0]
+
+
     sql_command_for_database = "INSERT INTO Solicitacoes (Descricao, Aluno, NomeMateria) VALUES (%s, %s, %s);"
-    values = (descricao, Aluno, nome_materia)
+    values = (descricao, NomeAluno, nome_materia)
     mycursor.execute(sql_command_for_database, values)
     db.commit()
     return jsonify({'status': 'solicitacao enviada'})
