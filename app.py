@@ -804,6 +804,8 @@ def fechar_chamada():
 
     return jsonify({'status': "chamada fechada com sucesso!"})
 
+  
+  
 @app.route('/enviar_solicitacao', methods=['POST'])
 def enviar_solicitacao():
     Aluno = request.form['nomeAluno']
@@ -828,6 +830,8 @@ def enviar_solicitacao():
     db.commit()
     return jsonify({'status': 'solicitacao enviada'})
 
+  
+  
 @app.route('/ler_solicitacao', methods=['POST'])
 def ler_solicitacao():
     #PRECISA DE ALTERCAO
@@ -864,6 +868,41 @@ def remover_solicitacao():
     
     return jsonify({'remover_solicitacao': 'True'})
 
+
+  
+  
+
+@app.route('/return_Reposicoes', methods=['POST'])
+def return_Reposicoes():
+
+    Email_aluno = request.form['Email']
+
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT * FROM Reposicoes WHERE RA IN (SELECT RA FROM aluno WHERE Email = %s);"
+    values = (Email_aluno,)
+    try:
+        mycursor.execute(sql_command_for_database, values)
+        db.commit()
+        Reposicoes = mycursor.fetchall()
+        
+        data = []
+
+        for linha in Reposicoes:
+            Json_reposicoes = {
+                'Motivo': linha[0],
+                'CodigoMateria': linha[1],
+                'CodigoPresenca': linha[2],
+                'RA': linha[3],
+                'Status': linha[4],
+            }
+            data.append(Json_reposicoes)
+        
+        return jsonify(data)
+    except:
+        return jsonify({'remover_solicitacao': 'Error'})
+
+      
+      
 @app.route('/enviar_solicitacao_reposicao', methods=['POST'])
 def enviar_solicitacao_reposicao():
     mycursor = db.cursor()
@@ -891,6 +930,9 @@ def enviar_solicitacao_reposicao():
     
     return jsonify({'enviar_solicitacao_reposical': 'solicitacao enviada com sucesso!'})
 
+  
+  
+  
 @app.route('/verificar_solicitacao_reposicao', methods=['POST'])
 def verificar_solicitacao_reposicao():
 
@@ -943,6 +985,7 @@ def verificar_solicitacao_reposicao():
     return jsonify({'verificar_solicitacao_reposicao': 'Atualizado com sucesso!'})
 
 
+  
 @app.route('/ler_solicitacoes_reposicao', methods=['POST'])
 def ler_solicitacoes_reposicao():
     mycursor = db.cursor()
@@ -970,6 +1013,8 @@ def ler_solicitacoes_reposicao():
         
     except:
         return jsonify({'ler_solicitacoes': "error"})
-    
+  
+  
+  
 if __name__ == '__main__':
     app.run()
