@@ -864,7 +864,112 @@ def remover_solicitacao():
     
     return jsonify({'remover_solicitacao': 'True'})
 
-    
+@app.route('/enviar_solicitacao_reposicao', methods=['POST'])
+def enviar_solicitacao_reposicao():
+    mycursor = db.cursor()
 
+    motivo = request.form['motivo']
+    codigo_materia = request.form['codigo_materia']
+    codigo_presenca = request.form['codigo_presenca']
+    codigo_usuario = request.form['codigo_usuario']
+    status = "Pendente"
+
+    # motivo = "bati com o node na cabeca do amigo4"
+    # codigo_materia = "231258"
+    # codigo_presenca = "teste4"
+    # codigo_usuario = "janedoe@gmail.com"
+    # status = "Pendente"
+
+    sql_command_for_database = "INSERT INTO reposicao_solicitacoes (motivo, codigo_materia, codigo_presenca, codigo_usuario, status) VALUES (%s, %s, %s, %s, %s);"
+    values = (motivo, codigo_materia, codigo_presenca, codigo_usuario, status)
+
+    try:
+        mycursor.execute(sql_command_for_database, values)
+        db.commit()
+    except:
+        return jsonify({'enviar_solicitacao_reposical': 'Error'})
+    
+    return jsonify({'enviar_solicitacao_reposical': 'solicitacao enviada com sucesso!'})
+
+@app.route('/verificar_solicitacao_reposicao', methods=['POST'])
+def verificar_solicitacao_reposicao():
+
+    resposta = request.form['resposta'] ##Sim ou Nao
+    codigo_usuario = request.form['codigo_usuario']
+    codigo_materia = request.form['codigo_materia']
+    codigo_presenca = request.form['codigo_presenca']
+    mycursor = db.cursor()
+
+    # resposta = "Nao"
+    # codigo_usuario = "janedoe@gmail.com"
+    # codigo_materia = "231258"
+    # codigo_presenca = "xxxxxx"
+
+    if resposta == "Sim":
+        sql_command_for_database = "INSERT INTO Aulas_com_Presenca (Codigo_Usuario, Codigo_Presenca, Codigo_Materia) VALUES (%s, %s, %s);"
+        values = (codigo_usuario, codigo_presenca, codigo_materia)
+        try:
+            mycursor.execute(sql_command_for_database, values)
+            db.commit()
+        except:
+            return jsonify({'Aulas_com_Presenca': 'Error'})
+    
+        sql_command_for_database = "UPDATE Materia_Aluno SET Frequencia = Frequencia + 1 WHERE Nome_Aluno = %s AND Nome_Materia = %s;"
+        values = (codigo_usuario, codigo_materia)
+        try:
+            mycursor.execute(sql_command_for_database, values)
+            db.commit()
+        except:
+            return jsonify({'Update_Frequencia': 'Error'})
+        
+        sql_command_for_database = "UPDATE reposicao_solicitacoes SET status = 'Aceito' WHERE codigo_usuario = %s AND codigo_presenca = %s;"
+        values = (codigo_usuario, codigo_presenca)
+        try:
+            mycursor.execute(sql_command_for_database, values)
+            db.commit()
+        except:
+            return jsonify({'atualizar status': 'Error'})
+
+    elif resposta == "Nao":
+        sql_command_for_database = "UPDATE reposicao_solicitacoes SET status = 'Negado' WHERE codigo_usuario = %s AND codigo_presenca = %s;"
+        values = (codigo_usuario, codigo_presenca)
+        try:
+            mycursor.execute(sql_command_for_database, values)
+            db.commit()
+        except:
+            return jsonify({'atualizar status': 'Error'})
+
+
+    return jsonify({'verificar_solicitacao_reposicao': 'Atualizado com sucesso!'})
+
+
+@app.route('/ler_solicitacoes_reposicao', methods=['POST'])
+def ler_solicitacoes_reposicao():
+    mycursor = db.cursor()
+    sqlCommand = "SELECT * FROM reposicao_solicitacoes WHERE status = 'Pendente';"
+    try:
+        mycursor.execute(sqlCommand)
+        solicitacoes = mycursor.fetchall()
+
+        print(solicitacoes)
+
+        data = []
+
+        for linha in solicitacoes:
+                
+            solicitacoes_arr = {
+                'motivo': linha[0],
+                'codigo_materia': linha[1],
+                'codigo_presenca': linha[2],
+                'codigo_usuario': linha[3],
+                'status': linha[4]
+                }
+            data.append(solicitacoes_arr)
+        
+        return jsonify(data)
+        
+    except:
+        return jsonify({'ler_solicitacoes': "error"})
+    
 if __name__ == '__main__':
     app.run()
