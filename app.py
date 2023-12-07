@@ -878,7 +878,7 @@ def return_Reposicoes():
     Email_aluno = request.form['Email']
 
     mycursor = db.cursor()
-    sql_command_for_database = "SELECT * FROM Reposicoes WHERE RA IN (SELECT RA FROM aluno WHERE Email = %s);"
+    sql_command_for_database = "SELECT * FROM reposicao_solicitacoes WHERE codigo_usuario = %s);"
     values = (Email_aluno,)
     try:
         mycursor.execute(sql_command_for_database, values)
@@ -918,6 +918,12 @@ def enviar_solicitacao_reposicao():
     # codigo_presenca = "teste4"
     # codigo_usuario = "janedoe@gmail.com"
     # status = "Pendente"
+
+    sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
+    values = (codigo_materia)
+    mycursor.execute(sql_command_for_database, values)
+    codigo_materia_from_db = mycursor.fetchone()
+    codigo_usuario = codigo_materia_from_db[0]
 
     sql_command_for_database = "INSERT INTO reposicao_solicitacoes (motivo, codigo_materia, codigo_presenca, codigo_usuario, status) VALUES (%s, %s, %s, %s, %s);"
     values = (motivo, codigo_materia, codigo_presenca, codigo_usuario, status)
