@@ -864,6 +864,40 @@ def remover_solicitacao():
     
     return jsonify({'remover_solicitacao': 'True'})
 
+
+@app.route('/return_Reposicoes', methods=['POST'])
+def return_Reposicoes():
+
+    Email_aluno = request.form['Email']
+
+    mycursor = db.cursor()
+    sql_command_for_database = "SELECT * FROM Reposicoes WHERE RA IN (SELECT RA FROM aluno WHERE Email = %s);"
+    values = (Email_aluno,)
+    try:
+        mycursor.execute(sql_command_for_database, values)
+        db.commit()
+        Reposicoes = mycursor.fetchall()
+        
+        data = []
+
+        for linha in Reposicoes:
+            Json_reposicoes = {
+                'Motivo': linha[0],
+                'CodigoMateria': linha[1],
+                'CodigoPresenca': linha[2],
+                'RA': linha[3],
+                'Status': linha[4],
+            }
+            data.append(Json_reposicoes)
+        
+        return jsonify(data)
+    except:
+        return jsonify({'remover_solicitacao': 'Error'})
+    
+
+
+
+
     
 
 if __name__ == '__main__':
