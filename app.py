@@ -958,6 +958,13 @@ def verificar_solicitacao_reposicao():
     # codigo_materia = "231258"
     # codigo_presenca = "xxxxxx"
 
+    sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s"
+    values = (codigo_materia,)
+    mycursor.execute(sql_command_for_database, values)
+    codigo_materia_from_db = mycursor.fetchone()
+
+    codigo_materia = codigo_materia_from_db[0]
+
     if resposta == "Sim":
         sql_command_for_database = "INSERT INTO Aulas_com_Presenca (Codigo_Usuario, Codigo_Presenca, Codigo_Materia) VALUES (%s, %s, %s);"
         values = (codigo_usuario, codigo_presenca, codigo_materia)
