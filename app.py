@@ -919,13 +919,6 @@ def enviar_solicitacao_reposicao():
     # codigo_usuario = "janedoe@gmail.com"
     # status = "Pendente"
 
-    sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
-    values = (codigo_materia,)
-    mycursor.execute(sql_command_for_database, values)
-    codigo_materia_from_db = mycursor.fetchone()
-    codigo_materia = codigo_materia_from_db[0]
-
-
     sql_command_for_database = "SELECT * from reposicao_solicitacoes WHERE codigo_usuario = %s and codigo_presenca = %s"
     values = (codigo_usuario, codigo_presenca)
     mycursor.execute(sql_command_for_database, values)
