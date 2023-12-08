@@ -1001,7 +1001,7 @@ def verificar_solicitacao_reposicao():
 def ler_solicitacoes_reposicao():
     mycursor = db.cursor()
     email_prof = request.form['email_prof']
-    sqlCommand = "SELECT * FROM reposicao_solicitacoes WHERE status = 'Pendente' AND codigo_materia IN (SELECT Codigo from Materia WHERE Nome IN (SELECT Nome_Materia from Materia_Professor WHERE Nome_Professor = %s));"
+    sqlCommand = "SELECT * FROM reposicao_solicitacoes WHERE status = 'Pendente' AND codigo_materia IN (SELECT Nome_Materia from Materia_Professor WHERE Nome_Professor = %s);"
     values = (email_prof,)
     try:
         mycursor.execute(sqlCommand, values)
