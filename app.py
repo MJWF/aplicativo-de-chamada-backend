@@ -872,30 +872,33 @@ def remover_solicitacao():
   
   
 
-@app.route('/return_Reposicoes', methods=['POST'])
+@app.route('/return_Reposicoes', methods=['GET'])
 def return_Reposicoes():
 
-    Email_aluno = request.form['Email']
+    email_aluno = request.form['Email']
 
     mycursor = db.cursor()
-    sql_command_for_database = "SELECT * FROM reposicao_solicitacoes WHERE codigo_usuario = %s);"
-    values = (Email_aluno,)
+    sql_command_for_database = "SELECT * FROM reposicao_solicitacoes WHERE codigo_usuario = %s;"
+    values = (email_aluno,)
+
     try:
         mycursor.execute(sql_command_for_database, values)
-        db.commit()
-        Reposicoes = mycursor.fetchall()
+        reposicoes = mycursor.fetchall()
         
         data = []
 
-        for linha in Reposicoes:
-            Json_reposicoes = {
+        for linha in reposicoes:
+            json_reposicoes = {
                 'Motivo': linha[0],
                 'CodigoMateria': linha[1],
                 'CodigoPresenca': linha[2],
                 'RA': linha[3],
                 'Status': linha[4],
             }
-            data.append(Json_reposicoes)
+            data.append(json_reposicoes)
+
+            print(data)
+        
         
         return jsonify(data)
     except:
