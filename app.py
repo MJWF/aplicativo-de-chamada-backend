@@ -920,7 +920,7 @@ def enviar_solicitacao_reposicao():
     # status = "Pendente"
 
     sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s;"
-    values = (codigo_materia)
+    values = (codigo_materia,)
     mycursor.execute(sql_command_for_database, values)
     codigo_materia_from_db = mycursor.fetchone()
     codigo_usuario = codigo_materia_from_db[0]
