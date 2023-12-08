@@ -914,8 +914,8 @@ def enviar_solicitacao_reposicao():
     status = "Pendente"
 
     # motivo = "bati com o node na cabeca do amigo4"
-    # codigo_materia = "231258"
-    # codigo_presenca = "teste4"
+    # codigo_materia = "Portugues"
+    # codigo_presenca = "231871"
     # codigo_usuario = "janedoe@gmail.com"
     # status = "Pendente"
 
@@ -923,7 +923,7 @@ def enviar_solicitacao_reposicao():
     values = (codigo_materia,)
     mycursor.execute(sql_command_for_database, values)
     codigo_materia_from_db = mycursor.fetchone()
-    codigo_usuario = codigo_materia_from_db[0]
+    codigo_materia = codigo_materia_from_db[0]
 
     sql_command_for_database = "INSERT INTO reposicao_solicitacoes (motivo, codigo_materia, codigo_presenca, codigo_usuario, status) VALUES (%s, %s, %s, %s, %s);"
     values = (motivo, codigo_materia, codigo_presenca, codigo_usuario, status)
