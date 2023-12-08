@@ -872,7 +872,7 @@ def remover_solicitacao():
   
   
 
-@app.route('/return_Reposicoes', methods=['GET'])
+@app.route('/return_Reposicoes', methods=['POST'])
 def return_Reposicoes():
 
     email_aluno = request.form['Email']
