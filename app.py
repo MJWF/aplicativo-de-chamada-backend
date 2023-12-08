@@ -953,10 +953,11 @@ def verificar_solicitacao_reposicao():
     codigo_presenca = request.form['codigo_presenca']
     mycursor = db.cursor()
 
-    # resposta = "Nao"
-    # codigo_usuario = "janedoe@gmail.com"
-    # codigo_materia = "231258"
-    # codigo_presenca = "xxxxxx"
+    print(resposta, codigo_usuario, codigo_materia, codigo_presenca)
+    #resposta = "Sim"
+    #codigo_usuario = "janedoe@gmail.com"
+    #codigo_materia = "Quimica"
+    #codigo_presenca = "234771"
 
     sql_command_for_database = "SELECT Codigo FROM Materia WHERE Nome = %s"
     values = (codigo_materia,)
