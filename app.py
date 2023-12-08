@@ -925,16 +925,25 @@ def enviar_solicitacao_reposicao():
     codigo_materia_from_db = mycursor.fetchone()
     codigo_materia = codigo_materia_from_db[0]
 
-    sql_command_for_database = "INSERT INTO reposicao_solicitacoes (motivo, codigo_materia, codigo_presenca, codigo_usuario, status) VALUES (%s, %s, %s, %s, %s);"
-    values = (motivo, codigo_materia, codigo_presenca, codigo_usuario, status)
 
-    try:
-        mycursor.execute(sql_command_for_database, values)
-        db.commit()
-    except:
-        return jsonify({'enviar_solicitacao_reposical': 'Error'})
+    sql_command_for_database = "SELECT * from reposicao_solicitacoes WHERE codigo_usuario = %s and codigo_presenca = %s"
+    values = (codigo_usuario, codigo_presenca)
+    mycursor.execute(sql_command_for_database, values)
+    res = mycursor.fetchall()
+
+    if not res:
+        sql_command_for_database = "INSERT INTO reposicao_solicitacoes (motivo, codigo_materia, codigo_presenca, codigo_usuario, status) VALUES (%s, %s, %s, %s, %s);"
+        values = (motivo, codigo_materia, codigo_presenca, codigo_usuario, status)
+
+        try:
+            mycursor.execute(sql_command_for_database, values)
+            db.commit()
+        except:
+            return jsonify({'enviar_solicitacao_reposical': 'Error'})
     
-    return jsonify({'enviar_solicitacao_reposical': 'solicitacao enviada com sucesso!'})
+        return jsonify({'enviar_solicitacao_reposical': 'solicitacao enviada com sucesso!'})
+    else:
+        return jsonify({'enviar_solicitacao_reposical': 'existente'})
 
   
   
@@ -995,9 +1004,11 @@ def verificar_solicitacao_reposicao():
 @app.route('/ler_solicitacoes_reposicao', methods=['POST'])
 def ler_solicitacoes_reposicao():
     mycursor = db.cursor()
-    sqlCommand = "SELECT * FROM reposicao_solicitacoes WHERE status = 'Pendente';"
+    email_prof = request.form['email_prof']
+    sqlCommand = "SELECT * FROM reposicao_solicitacoes WHERE status = 'Pendente' AND codigo_materia IN (SELECT Codigo from Materia WHERE Nome IN (SELECT Nome_Materia from Materia_Professor WHERE Nome_Professor = %s));"
+    values = (email_prof,)
     try:
-        mycursor.execute(sqlCommand)
+        mycursor.execute(sqlCommand, values)
         solicitacoes = mycursor.fetchall()
 
         print(solicitacoes)
